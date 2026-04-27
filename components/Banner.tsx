@@ -13,7 +13,7 @@ export default function Banner() {
             />
 
             {/* Overlay */}
-            <div className="absolute inset-0 bg-black/20 flex flex-col items-center justify-center text-center px-4 sm:px-6">
+            {/* <div className="absolute inset-0 bg-black/20 flex flex-col items-center justify-center text-center px-4 sm:px-6">
                 <div className="max-w-4xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
                     <span className="text-white/90 text-[10px] sm:text-sm tracking-[0.3em] font-medium uppercase mb-3 sm:mb-4 block">
                         New Arrivals
@@ -27,8 +27,9 @@ export default function Banner() {
                 </div>
             </div>
 
-            {/* Bottom Gradient Fade */}
             <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+         */}
+
         </section>
     );
 }

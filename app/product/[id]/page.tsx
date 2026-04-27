@@ -1,35 +1,154 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import React, { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { Star, Minus, Plus, Share2, Ruler, Truck, RefreshCw, CreditCard, ChevronDown } from "lucide-react";
-import { products } from "@/data/products";
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getProductWithVariantSizeApi } from "@/api-endpoints/products";
+import { useProducts } from "@/context/ProductsContext";
 import ProductCard from "@/components/ProductCard";
+import { useVendor } from "@/context/VendorContext";
+import { useUser } from "@/context/UserContext";
+import { useCartItem } from "@/context/CartItemContext";
+import { postCartCreateApi, postCartitemApi } from "@/api-endpoints/CartsApi";
 
 export default function ProductDetailPage() {
     const { id } = useParams();
-    const product = products.find(p => p.id === parseInt(id as string)) || products[0];
-    const [quantity, setQuantity] = useState(1);
-    const [selectedSize, setSelectedSize] = useState("52");
+    const router = useRouter();
+    const { products: allProducts } = useProducts();
 
-    const sizes = ["52", "54", "56", "58"];
+    const { data: productData, isLoading, error } = useQuery({
+        queryKey: ["product", id],
+        queryFn: async () => {
+            const res = await getProductWithVariantSizeApi(id);
+            return res.data;
+        },
+        enabled: !!id,
+    });
+
+    const { vendorId } = useVendor();
+    const { user } = useUser();
+    const { refetchCart } = useCartItem();
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
+
+    const [quantity, setQuantity] = useState(1);
+    const [selectedSize, setSelectedSize] = useState("");
+    const [mainImage, setMainImage] = useState("");
+
+    // Update main image and selected size when data arrives
+    React.useEffect(() => {
+        if (productData) {
+            const firstImage = (productData.image_urls && productData.image_urls[0]) || productData.product_image || "/abaya_1.png";
+            setMainImage(firstImage.replace("http://ip/", "http://82.29.161.36/"));
+
+            if (productData.variants?.length > 0) {
+                setSelectedSize(productData.variants[0].size);
+            }
+        }
+    }, [productData]);
+
+    const handleAddToCart = async () => {
+        if (!user || !user.id) {
+            alert("Please login to add items to your cart.");
+            router.push("/login");
+            return;
+        }
+
+        setIsAddingToCart(true);
+        try {
+            let currentCartId = localStorage.getItem('cartId');
+            
+            if (!currentCartId) {
+                const cartRes = await postCartCreateApi("", { 
+                    user: user.id, 
+                    vendor: vendorId,
+                    created_by: user.id
+                });
+                currentCartId = cartRes.data?.id || cartRes.data?.cart_id || cartRes.data?.data?.id;
+                if (currentCartId) {
+                    localStorage.setItem('cartId', currentCartId);
+                }
+            }
+
+            if (!currentCartId) {
+                throw new Error("Could not create or retrieve cart ID");
+            }
+
+            const selectedVariant = productData.variants?.find((v: any) => v.size === selectedSize);
+
+            const payload = {
+                cart: currentCartId,
+                user: user.id,
+                vendor: vendorId,
+                created_by: user.id,
+                product: productData.id,
+                quantity: quantity,
+                variant: selectedVariant?.id
+            };
+
+            await postCartitemApi("", payload);
+            if (refetchCart) refetchCart();
+            alert("Added to cart successfully!");
+        } catch (err: any) {
+            console.error("Error adding to cart:", err);
+            if (err.response) {
+                console.error("Error response data:", err.response.data);
+                alert(`Failed to add to cart: ${JSON.stringify(err.response.data)}`);
+            } else {
+                alert("Failed to add to cart. Please try again.");
+            }
+        } finally {
+            setIsAddingToCart(false);
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#000000]"></div>
+            </div>
+        );
+    }
+
+    if (error || !productData) {
+        return (
+            <div className="min-h-screen flex items-center justify-center italic text-xl">
+                Product not found
+            </div>
+        );
+    }
+
+    const product = {
+        id: productData.id,
+        name: productData.name || productData.product_name || "Unnamed Product",
+        oldPrice: productData.discount ? `₹${productData.discount}` : `₹${productData.price}`,
+        newPrice: `₹${productData.price}`,
+        reviews: productData.reviews || 0,
+        description: productData.description || "No description available.",
+        onSale: productData.discount ? parseFloat(productData.discount) > parseFloat(productData.price) : false,
+    };
+
+    const images = productData.image_urls?.map((url: string) => url.replace("http://ip/", "http://82.29.161.36/")) || [mainImage];
+    const sizes = Array.from(new Set(productData.variants?.map((v: any) => v.size).filter(Boolean) || []));
 
     return (
-        <main className="max-w-[1440px] mx-auto px-6 sm:px-12 py-12 font-[family-name:var(--font-cormorant)] text-[#031c06]">
+        <main className="max-w-[1440px] mx-auto px-6 sm:px-12 py-12 font-[family-name:var(--font-cormorant)] text-[#000000]">
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-24">
 
                 {/* Left Column - Gallery */}
                 <div className="space-y-6">
                     <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden shadow-xl bg-gray-50">
-                        <Image
-                            src={product.image}
-                            alt={product.name}
-                            fill
-                            className="object-cover"
-                            priority
-                        />
+                        {mainImage && (
+                            <Image
+                                src={mainImage}
+                                alt={product.name}
+                                fill
+                                className="object-cover"
+                                priority
+                            />
+                        )}
                         {product.onSale && (
                             <div className="absolute top-6 left-6 bg-white px-6 py-2 rounded-full shadow-lg text-sm font-bold italic z-10">
                                 Sale
@@ -37,12 +156,15 @@ export default function ProductDetailPage() {
                         )}
                     </div>
 
-                    {/* Thumbnail Grid */}
                     <div className="grid grid-cols-3 gap-4">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="relative aspect-square rounded-2xl overflow-hidden cursor-pointer hover:opacity-80 transition-opacity border border-gray-100">
+                        {images.slice(0, 3).map((img: string, i: number) => (
+                            <div
+                                key={i}
+                                onClick={() => setMainImage(img)}
+                                className={`relative aspect-square rounded-2xl overflow-hidden cursor-pointer hover:opacity-80 transition-opacity border ${mainImage === img ? "border-[#000000] border-2" : "border-gray-100"}`}
+                            >
                                 <Image
-                                    src={product.image}
+                                    src={img}
                                     alt={`Detail ${i}`}
                                     fill
                                     className="object-cover"
@@ -53,15 +175,17 @@ export default function ProductDetailPage() {
 
                     {/* Lifestyle/Video Placeholder */}
                     <div className="relative aspect-video rounded-[2rem] overflow-hidden mt-8 group cursor-pointer">
-                        <Image
-                            src={product.image}
-                            alt="Lifestyle View"
-                            fill
-                            className="object-cover brightness-75 group-hover:brightness-90 transition-all"
-                        />
+                        {mainImage && (
+                            <Image
+                                src={mainImage}
+                                alt="Lifestyle View"
+                                fill
+                                className="object-cover brightness-75 group-hover:brightness-90 transition-all"
+                            />
+                        )}
                         <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-2xl">
-                                <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[18px] border-l-[#031c06] border-b-[10px] border-b-transparent ml-1"></div>
+                                <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[18px] border-l-[#000000] border-b-[10px] border-b-transparent ml-1"></div>
                             </div>
                         </div>
                     </div>
@@ -69,19 +193,19 @@ export default function ProductDetailPage() {
 
                 {/* Right Column - Product Info */}
                 <div className="flex flex-col pt-4">
-                    <span className="text-sm tracking-[0.2em] opacity-60 uppercase font-medium mb-2">Sakina Abaya</span>
+                    <span className="text-sm tracking-[0.2em] opacity-60 uppercase font-medium mb-2">Sheyas</span>
                     <h1 className="text-4xl sm:text-5xl font-serif mb-6 italic tracking-wide">{product.name}</h1>
 
                     <div className="flex items-center gap-4 mb-6">
                         <span className="text-lg opacity-40 line-through italic">{product.oldPrice}</span>
                         <span className="text-3xl font-bold italic">{product.newPrice}</span>
-                        <span className="bg-[#031c06] text-white text-xs px-3 py-1 rounded-full italic font-medium uppercase tracking-wider">Sale</span>
+                        <span className="bg-[#000000] text-white text-xs px-3 py-1 rounded-full italic font-medium uppercase tracking-wider">Sale</span>
                     </div>
 
                     <p className="text-sm opacity-60 italic mb-6">Taxes included.</p>
 
                     <div className="flex items-center gap-2 mb-8 pb-8 border-b border-gray-100">
-                        <div className="flex items-center text-[#031c06]">
+                        <div className="flex items-center text-[#000000]">
                             {[...Array(5)].map((_, i) => (
                                 <Star key={i} className={`w-4 h-4 ${i < 4.5 ? "fill-current" : "opacity-30"}`} />
                             ))}
@@ -98,13 +222,13 @@ export default function ProductDetailPage() {
                             </button>
                         </div>
                         <div className="flex gap-3">
-                            {sizes.map((size) => (
+                            {sizes.map((size: any, index: number) => (
                                 <button
-                                    key={size}
+                                    key={`${size}-${index}`}
                                     onClick={() => setSelectedSize(size)}
                                     className={`w-14 h-14 rounded-full border text-sm font-medium transition-all ${selectedSize === size
-                                        ? "bg-[#031c06] text-white border-[#031c06]"
-                                        : "border-gray-200 hover:border-[#031c06]"
+                                        ? "bg-[#000000] text-white border-[#000000]"
+                                        : "border-gray-200 hover:border-[#000000]"
                                         }`}
                                 >
                                     {size}
@@ -129,10 +253,14 @@ export default function ProductDetailPage() {
 
                     {/* Action Buttons */}
                     <div className="space-y-4 mb-12">
-                        <button className="w-full border-2 border-[#031c06] py-4 rounded-full text-lg font-bold italic hover:bg-[#031c06] hover:text-white transition-all">
-                            Add to cart
+                        <button 
+                            onClick={handleAddToCart}
+                            disabled={isAddingToCart}
+                            className={`w-full border-2 border-[#000000] py-4 rounded-full text-lg font-bold italic transition-all ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#000000] hover:text-white'}`}
+                        >
+                            {isAddingToCart ? "Adding to cart..." : "Add to cart"}
                         </button>
-                        <button className="w-full bg-[#5a4636] text-white py-4 rounded-full text-lg font-bold italic hover:opacity-90 transition-all shadow-xl">
+                        <button className="w-full bg-[#000000] text-white py-4 rounded-full text-lg font-bold italic hover:opacity-90 transition-all shadow-xl">
                             Buy it now
                         </button>
                     </div>
@@ -153,25 +281,7 @@ export default function ProductDetailPage() {
                         </div>
                     </div>
 
-                    {/* Description */}
-                    <div className="prose prose-stone max-w-none italic text-[#031c06]/80 leading-relaxed space-y-4">
-                        <p>
-                            Gracefully balanced between warm softness and structure, the
-                            <strong> {product.name}</strong> is designed to make an elegant
-                            statement without excess.
-                        </p>
-                        <p>
-                            Featuring a flowing black outer layer paired with a
-                            blush pink inner panel, this abaya creates a striking
-                            contrast that feels refined and feminine.
-                        </p>
-                        <ul className="list-none p-0 space-y-2 not-italic font-medium text-sm border-t border-gray-100 pt-6">
-                            <li className="flex justify-between border-b border-gray-50 py-2"><span>Fabric</span> <span className="opacity-60">Premium Nidha Fabric</span></li>
-                            <li className="flex justify-between border-b border-gray-50 py-2"><span>Style</span> <span className="opacity-60">Two-tone layered design</span></li>
-                            <li className="flex justify-between border-b border-gray-50 py-2"><span>Detailing</span> <span className="opacity-60">Embroidered lapels</span></li>
-                            <li className="flex justify-between border-b border-gray-50 py-2"><span>Fit</span> <span className="opacity-60">Modest, full-length fit</span></li>
-                        </ul>
-                    </div>
+                    <div className="prose prose-stone max-w-none italic text-[#000000]/80 leading-relaxed space-y-4" dangerouslySetInnerHTML={{ __html: product.description }} />
                 </div>
             </div>
 
@@ -179,8 +289,20 @@ export default function ProductDetailPage() {
             <div className="border-t border-gray-100 pt-24 mb-24">
                 <h2 className="text-3xl font-serif mb-12 italic">You may also like</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                    {products.slice(4, 8).map((p) => (
-                        <ProductCard key={p.id} product={p} />
+                    {allProducts && allProducts.length > 0 && allProducts.slice(0, 4).map((p: any) => (
+                        <ProductCard
+                            key={p.id}
+                            product={{
+                                id: p.id,
+                                name: p.name || p.product_name,
+                                oldPrice: `₹${p.discount || p.price}`,
+                                newPrice: `₹${p.price}`,
+                                rating: p.ratings || 0,
+                                reviews: 0,
+                                image: (p.image_urls && p.image_urls[0]) || p.product_image || "/abaya_1.png",
+                                onSale: p.discount ? parseFloat(p.discount) > parseFloat(p.price) : false,
+                            }}
+                        />
                     ))}
                 </div>
             </div>
@@ -193,7 +315,7 @@ export default function ProductDetailPage() {
                     {/* Review Header */}
                     <div className="flex flex-col md:flex-row items-center justify-between gap-12 mb-16 bg-[#f9f8f4] p-10 rounded-[2rem]">
                         <div className="text-center md:text-left">
-                            <div className="flex items-center justify-center md:justify-start gap-1 text-[#031c06] mb-2">
+                            <div className="flex items-center justify-center md:justify-start gap-1 text-[#000000] mb-2">
                                 {[...Array(5)].map((_, i) => (
                                     <Star key={i} className="w-5 h-5 fill-current" />
                                 ))}
@@ -209,14 +331,14 @@ export default function ProductDetailPage() {
                                         {rating} <Star className="w-3 h-3 fill-current" />
                                     </div>
                                     <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                        <div className={`h-full bg-[#031c06]`} style={{ width: `${rating === 5 ? 70 : rating === 4 ? 20 : 10}%` }}></div>
+                                        <div className={`h-full bg-[#000000]`} style={{ width: `${rating === 5 ? 70 : rating === 4 ? 20 : 10}%` }}></div>
                                     </div>
                                     <span className="w-4">{rating === 5 ? 2 : rating === 4 ? 0 : 1}</span>
                                 </div>
                             ))}
                         </div>
 
-                        <button className="bg-[#5a4636] text-white px-8 py-3 rounded-full text-sm font-bold italic hover:opacity-90 transition-all">
+                        <button className="bg-[#000000] text-white px-8 py-3 rounded-full text-sm font-bold italic hover:opacity-90 transition-all">
                             Write a review
                         </button>
                     </div>
@@ -225,7 +347,7 @@ export default function ProductDetailPage() {
                     <div className="space-y-12">
                         {[1, 2].map((i) => (
                             <div key={i} className="border-b border-gray-100 pb-12">
-                                <div className="flex items-center gap-1 text-[#031c06] mb-3">
+                                <div className="flex items-center gap-1 text-[#000000] mb-3">
                                     {[...Array(5)].map((_, j) => (
                                         <Star key={j} className={`w-3 h-3 ${j < (i === 1 ? 5 : 4) ? "fill-current" : "opacity-20"}`} />
                                     ))}
@@ -236,7 +358,7 @@ export default function ProductDetailPage() {
                                     </div>
                                     <span className="text-sm font-bold italic">{i === 1 ? "Mujtaba" : "Sahra"}</span>
                                 </div>
-                                <p className="text-sm text-[#031c06]/80 italic leading-relaxed">
+                                <p className="text-sm text-[#000000]/80 italic leading-relaxed">
                                     {i === 1 ? "The quality is outstanding. The fabric feels very premium and the fit is perfect." : "Beautiful abaya, but shipping took a bit longer than expected. Overall happy with the purchase."}
                                 </p>
                             </div>

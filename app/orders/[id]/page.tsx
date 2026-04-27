@@ -8,7 +8,7 @@ import { products } from "@/data/products";
 
 export default function OrderDetailsPage() {
     const { id } = useParams();
-    
+
     // Mock order data
     const order = {
         id: id || "1024",
@@ -34,7 +34,7 @@ export default function OrderDetailsPage() {
     return (
         <main className="min-h-screen bg-[#fcfcfc] py-12 px-6 sm:px-12 font-sans text-gray-900">
             <div className="max-w-4xl mx-auto">
-                
+
                 {/* Back Link */}
                 <Link href="/profile" className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors mb-8 group">
                     <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -54,10 +54,10 @@ export default function OrderDetailsPage() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    
+
                     {/* Left Column: Items & Timeline */}
                     <div className="lg:col-span-2 space-y-8">
-                        
+
                         {/* Order Items */}
                         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
                             <div className="p-6 border-b border-gray-50 flex items-center gap-3">
@@ -75,7 +75,7 @@ export default function OrderDetailsPage() {
                                             <p className="text-sm text-gray-500 mb-2 italic">Size: 52</p>
                                             <div className="flex items-center justify-between">
                                                 <span className="text-sm font-medium text-gray-900">Qty: {item.quantity}</span>
-                                                <span className="font-bold text-[#031c06]">{item.newPrice}</span>
+                                                <span className="font-bold text-[#000000]">{item.newPrice}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -91,7 +91,7 @@ export default function OrderDetailsPage() {
                             </div>
                             <div className="space-y-8 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-gray-100">
                                 <div className="flex gap-6 relative">
-                                    <div className="w-6 h-6 bg-[#031c06] rounded-full border-4 border-white shadow-sm z-10 flex-shrink-0"></div>
+                                    <div className="w-6 h-6 bg-green-800 rounded-full border-4 border-white shadow-sm z-10 flex-shrink-0"></div>
                                     <div>
                                         <p className="text-sm font-bold">Order Confirmed</p>
                                         <p className="text-xs text-gray-500 italic">{order.date} • 10:30 AM</p>
@@ -110,7 +110,7 @@ export default function OrderDetailsPage() {
 
                     {/* Right Column: Address & Summary */}
                     <div className="space-y-8">
-                        
+
                         {/* Shipping Address */}
                         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
                             <div className="flex items-center gap-3 mb-6">
@@ -137,7 +137,7 @@ export default function OrderDetailsPage() {
                         </div>
 
                         {/* Order Summary */}
-                        <div className="bg-[#031c06] text-white rounded-xl shadow-xl p-8 space-y-4">
+                        <div className="bg-[#000000] text-white rounded-xl shadow-xl p-8 space-y-4">
                             <h2 className="font-serif italic text-xl mb-4 tracking-wide">Summary</h2>
                             <div className="flex justify-between text-sm opacity-60">
                                 <span>Subtotal</span>

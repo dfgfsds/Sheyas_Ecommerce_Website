@@ -4,15 +4,15 @@ export default function EleganceSection() {
             <div className="max-w-3xl mx-auto">
 
                 {/* Title */}
-                <h2 className="text-3xl sm:text-4xl font-serif text-[#5a4636] tracking-wide">
+                <h2 className="text-3xl sm:text-4xl font-serif text-[#000000] tracking-wide">
                     Elegance in Every Stitch
                 </h2>
 
                 {/* Divider */}
-                <div className="w-16 h-[1px] bg-[#cbbfb3] mx-auto my-6"></div>
+                <div className="w-16 h-[1px] bg-[#000000] mx-auto my-6"></div>
 
                 {/* Description */}
-                <p className="text-sm sm:text-base text-[#7a6a5a] leading-relaxed tracking-wide">
+                <p className="text-sm sm:text-base text-gray-800 leading-relaxed tracking-wide">
                     Discover timeless abayas crafted with care, comfort, and style.
                     From everyday wear to special occasions, our collection blends
                     tradition with modern elegance.
