@@ -28,6 +28,7 @@ export default function ProfilePage() {
         state: "",
         pincode: "",
         landmark: "",
+        address_type: "Home", // Default value
         is_default: false
     });
 
@@ -71,11 +72,23 @@ export default function ProfilePage() {
 
     const handleAddressSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Basic validation
+        if (addressForm.contact_number.length !== 10 || !/^\d{10}$/.test(addressForm.contact_number)) {
+            alert("Contact number must be exactly 10 digits.");
+            return;
+        }
+
         setIsLoading(true);
         const userId = user.data?.id || user.id;
         
         const payload = {
             ...addressForm,
+            address_line1: addressForm.address_line_1,
+            address_line2: addressForm.address_line_2,
+            postal_code: addressForm.pincode,
+            mobile: addressForm.contact_number,
+            created_by: user.data?.name || user.name || "User",
             user: userId,
             vendor: vendorId
         };
@@ -91,9 +104,9 @@ export default function ProfilePage() {
             setIsAddressModalOpen(false);
             setEditingAddress(null);
             fetchAddresses();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error saving address:", error);
-            alert("Failed to save address.");
+            alert(error?.response?.data?.error || "Failed to save address.");
         } finally {
             setIsLoading(false);
         }
@@ -121,8 +134,9 @@ export default function ProfilePage() {
                 address_line_2: address.address_line_2 || "",
                 city: address.city || "",
                 state: address.state || "",
-                pincode: address.pincode || "",
+                pincode: address.pincode || address.postal_code || "",
                 landmark: address.landmark || "",
+                address_type: address.address_type || "Home",
                 is_default: address.is_default || false
             });
         } else {
@@ -136,6 +150,7 @@ export default function ProfilePage() {
                 state: "",
                 pincode: "",
                 landmark: "",
+                address_type: "Home",
                 is_default: false
             });
         }
@@ -403,6 +418,26 @@ export default function ProfilePage() {
                                         onChange={(e) => setAddressForm({...addressForm, landmark: e.target.value})}
                                         className="w-full bg-gray-50 border border-transparent rounded-2xl py-4 px-6 focus:bg-white focus:border-black/10 focus:ring-4 focus:ring-black/5 outline-none font-bold text-sm transition-all"
                                     />
+                                </div>
+
+                                <div className="md:col-span-2">
+                                    <label className="block text-[10px] font-bold uppercase tracking-[0.2em] mb-2 px-1 text-gray-400">Address Type</label>
+                                    <div className="flex gap-4">
+                                        {["Home", "Office"].map((type) => (
+                                            <button
+                                                key={type}
+                                                type="button"
+                                                onClick={() => setAddressForm({...addressForm, address_type: type})}
+                                                className={`flex-1 py-3 rounded-xl border text-sm font-bold transition-all ${
+                                                    addressForm.address_type === type 
+                                                    ? "bg-black text-white border-black" 
+                                                    : "bg-gray-50 text-gray-500 border-transparent hover:border-gray-200"
+                                                }`}
+                                            >
+                                                {type}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 <div className="md:col-span-2 flex items-center gap-3 px-1 mt-2">

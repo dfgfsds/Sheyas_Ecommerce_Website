@@ -4,12 +4,21 @@ import { Search, User, ShoppingBag, X } from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useUser } from "@/context/UserContext";
 
 export default function Header() {
     const pathname = usePathname();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { user, isAuthenticated } = useUser();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const userData = user?.data || user;
 
     const navItems = [
         { name: "Home", path: "/" },
@@ -51,9 +60,18 @@ export default function Header() {
                         </nav>
 
                         <div className="mt-auto pt-8 border-t border-gray-100 flex flex-col gap-6">
-                            <Link href="/login" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[#000000] font-bold italic">
-                                <User className="w-5 h-5" /> Account
-                            </Link>
+                            {mounted && isAuthenticated ? (
+                                <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex flex-col gap-1 text-[#000000] font-bold italic">
+                                    <div className="flex items-center gap-3">
+                                        <User className="w-5 h-5" /> {userData?.name}
+                                    </div>
+                                    <span className="text-[10px] opacity-60 ml-8">{userData?.contact_number || userData?.mobile}</span>
+                                </Link>
+                            ) : (
+                                <Link href="/login" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[#000000] font-bold italic">
+                                    <User className="w-5 h-5" /> Account
+                                </Link>
+                            )}
                             <Link href="/cart" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[#000000] font-bold italic">
                                 <ShoppingBag className="w-5 h-5" /> Cart
                             </Link>
@@ -119,9 +137,21 @@ export default function Header() {
                         >
                             <Search className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
                         </button>
-                        <Link href="/login" aria-label="Account" className="hidden sm:block hover:opacity-70 transition-opacity">
-                            <User className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
-                        </Link>
+                        {mounted && isAuthenticated ? (
+                            <Link href="/profile" aria-label="Account" className="hidden sm:flex flex-col items-end hover:opacity-70 transition-opacity">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-black/40 leading-none mb-1">Welcome</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm font-bold italic">{userData?.name}</span>
+                                    <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-[10px] font-bold not-italic">
+                                        {userData?.name?.charAt(0)}
+                                    </div>
+                                </div>
+                            </Link>
+                        ) : (
+                            <Link href="/login" aria-label="Account" className="hidden sm:block hover:opacity-70 transition-opacity">
+                                <User className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
+                            </Link>
+                        )}
                         <Link href="/cart" aria-label="Cart" className="hover:opacity-70 transition-opacity">
                             <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
                         </Link>
