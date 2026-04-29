@@ -42,8 +42,8 @@ export default function ProductDetailPage() {
             const firstImage = (productData.image_urls && productData.image_urls[0]) || productData.product_image || "/abaya_1.png";
             setMainImage(firstImage.replace("http://ip/", "http://82.29.161.36/"));
 
-            if (productData.variants?.length > 0) {
-                setSelectedSize(productData.variants[0].size);
+            if (productData.variants?.length > 0 && productData.variants[0].sizes?.length > 0) {
+                setSelectedSize(productData.variants[0].sizes[0].product_size);
             }
         }
     }, [productData]);
@@ -58,10 +58,10 @@ export default function ProductDetailPage() {
         setIsAddingToCart(true);
         try {
             let currentCartId = localStorage.getItem('cartId');
-            
+
             if (!currentCartId) {
-                const cartRes = await postCartCreateApi("", { 
-                    user: user.id, 
+                const cartRes = await postCartCreateApi("", {
+                    user: user.id,
                     vendor: vendorId,
                     created_by: user.id
                 });
@@ -75,7 +75,9 @@ export default function ProductDetailPage() {
                 throw new Error("Could not create or retrieve cart ID");
             }
 
-            const selectedVariant = productData.variants?.find((v: any) => v.size === selectedSize);
+            const selectedVariant = productData.variants?.find((v: any) =>
+                v.sizes?.some((s: any) => s.product_size === selectedSize)
+            );
 
             const payload = {
                 cart: currentCartId,
@@ -130,10 +132,13 @@ export default function ProductDetailPage() {
     };
 
     const images = productData.image_urls?.map((url: string) => url.replace("http://ip/", "http://82.29.161.36/")) || [mainImage];
-    const sizes = Array.from(new Set(productData.variants?.map((v: any) => v.size).filter(Boolean) || []));
+    const sizes = Array.from(new Set(
+        productData.variants?.flatMap((v: any) => v.sizes?.map((s: any) => s.product_size) || [])
+            .filter(Boolean) || []
+    ));
 
     return (
-        <main className="max-w-[1440px] mx-auto px-6 sm:px-12 py-12 font-[family-name:var(--font-cormorant)] text-[#000000]">
+        <main className="max-w-[1440px] mx-auto px-6 sm:px-12 py-12  text-[#000000]">
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-24">
 
@@ -194,33 +199,28 @@ export default function ProductDetailPage() {
                 {/* Right Column - Product Info */}
                 <div className="flex flex-col pt-4">
                     <span className="text-sm tracking-[0.2em] opacity-60 uppercase font-medium mb-2">Sheyas</span>
-                    <h1 className="text-4xl sm:text-5xl font-serif mb-6 italic tracking-wide">{product.name}</h1>
+                    <h1 className="text-4xl sm:text-5xl  font-bold mb-6  tracking-wide">{product.name}</h1>
 
                     <div className="flex items-center gap-4 mb-6">
                         <span className="text-lg opacity-40 line-through italic">{product.oldPrice}</span>
-                        <span className="text-3xl font-bold italic">{product.newPrice}</span>
+                        <span className="text-3xl font-bold ">{product.newPrice}</span>
                         <span className="bg-[#000000] text-white text-xs px-3 py-1 rounded-full italic font-medium uppercase tracking-wider">Sale</span>
                     </div>
 
-                    <p className="text-sm opacity-60 italic mb-6">Taxes included.</p>
+                    <p className="text-sm md:text-base font-medium  mb-6">Taxes included.</p>
 
                     <div className="flex items-center gap-2 mb-8 pb-8 border-b border-gray-100">
-                        <div className="flex items-center text-[#000000]">
+                        <div className="flex items-center text-yellow-600">
                             {[...Array(5)].map((_, i) => (
-                                <Star key={i} className={`w-4 h-4 ${i < 4.5 ? "fill-current" : "opacity-30"}`} />
+                                <Star key={i} className={`w-5 h-5 ${i < 4.5 ? "fill-current" : "opacity-30"}`} />
                             ))}
                         </div>
-                        <span className="text-sm italic opacity-80">{product.reviews} reviews</span>
+                        <span className="text-sm md:text-lg font-medium  opacity-80">{product.reviews} reviews</span>
                     </div>
 
                     {/* Size Selection */}
                     <div className="mb-8">
-                        <div className="flex items-center justify-between mb-4">
-                            <span className="text-sm font-bold italic uppercase tracking-wider">Size</span>
-                            <button className="flex items-center gap-2 text-sm italic hover:underline">
-                                <Ruler className="w-4 h-4" /> Size chart
-                            </button>
-                        </div>
+
                         <div className="flex gap-3">
                             {sizes.map((size: any, index: number) => (
                                 <button
@@ -239,7 +239,7 @@ export default function ProductDetailPage() {
 
                     {/* Quantity */}
                     <div className="mb-10">
-                        <span className="text-sm font-bold italic uppercase tracking-wider block mb-4">Quantity</span>
+                        <span className="text-sm font-bold  uppercase tracking-wider block mb-4">Quantity</span>
                         <div className="inline-flex items-center border border-gray-200 rounded-full px-6 py-3">
                             <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="hover:opacity-60 transition-opacity">
                                 <Minus className="w-4 h-4" />
@@ -253,19 +253,19 @@ export default function ProductDetailPage() {
 
                     {/* Action Buttons */}
                     <div className="space-y-4 mb-12">
-                        <button 
+                        <button
                             onClick={handleAddToCart}
                             disabled={isAddingToCart}
                             className={`w-full border-2 border-[#000000] py-4 rounded-full text-lg font-bold italic transition-all ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#000000] hover:text-white'}`}
                         >
                             {isAddingToCart ? "Adding to cart..." : "Add to cart"}
                         </button>
-                        <button className="w-full bg-[#000000] text-white py-4 rounded-full text-lg font-bold italic hover:opacity-90 transition-all shadow-xl">
+                        {/* <button className="w-full bg-[#000000] text-white py-4 rounded-full text-lg font-bold italic hover:opacity-90 transition-all shadow-xl">
                             Buy it now
-                        </button>
+                        </button> */}
                     </div>
 
-                    {/* Info Icons */}
+                    {/*
                     <div className="grid grid-cols-3 gap-4 py-8 border-t border-b border-gray-100 mb-12">
                         <div className="flex flex-col items-center text-center space-y-2">
                             <Truck className="w-6 h-6 stroke-[1.5px]" />
@@ -279,7 +279,7 @@ export default function ProductDetailPage() {
                             <CreditCard className="w-6 h-6 stroke-[1.5px]" />
                             <span className="text-[10px] sm:text-xs italic leading-tight">Cash on Delivery</span>
                         </div>
-                    </div>
+                    </div> */}
 
                     <div className="prose prose-stone max-w-none italic text-[#000000]/80 leading-relaxed space-y-4" dangerouslySetInnerHTML={{ __html: product.description }} />
                 </div>

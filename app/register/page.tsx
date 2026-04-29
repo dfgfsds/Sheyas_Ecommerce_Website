@@ -2,15 +2,65 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { User, Mail, Phone, Lock, ArrowRight } from "lucide-react";
+import { postCreateUserAPi } from "@/api-endpoints/authendication";
+import { useUser } from "@/context/UserContext";
+import { useVendor } from "@/context/VendorContext";
 
 export default function RegisterPage() {
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        phone: "",
-        password: ""
-    });
+    const router = useRouter();
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [password, setPassword] = useState("");
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
+    const { login } = useUser();
+    const { vendorId } = useVendor();
+
+    const handleRegister = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+
+        if (phone.length !== 10 || !/^\d{10}$/.test(phone)) {
+            setError("Registration failed: Phone number must be exactly 10 digits.");
+            return;
+        }
+
+        setIsLoading(true);
+
+        try {
+            const payload = {
+                name,
+                email,
+                mobile: phone,
+                contact_number: phone,
+                password,
+                role: "user",
+                created_by: vendorId || 159,
+                vendor: vendorId || 159,
+                vendor_id: vendorId || 159
+            };
+
+            const response = await postCreateUserAPi(payload);
+            const userId = response.data?.user_id || response.data?.id;
+
+            if (userId) {
+                login(response.data);
+                router.push("/");
+            } else {
+                // If the backend requires a manual login after registration
+                router.push("/login?registered=true");
+            }
+        } catch (err: any) {
+            console.error('Registration error:', err);
+            setError(err?.response?.data?.error || err?.response?.data?.message || err?.response?.data?.detail || "System Error: Registration compromised.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <main className="min-h-[90vh] flex items-center justify-center px-4 sm:px-6 py-12 sm:py-20  text-gray-800 bg-[#f9f8f4]">
@@ -23,7 +73,12 @@ export default function RegisterPage() {
                 </div>
 
                 {/* Form */}
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={handleRegister}>
+                    {error && (
+                        <div className="bg-red-50 text-red-500 p-4 rounded-xl text-sm font-medium">
+                            {error}
+                        </div>
+                    )}
                     {/* Full Name */}
                     <div>
                         <label className="block text-[10px] sm:text-xs font-bold capitalize tracking-[0.2em] mb-2.5 opacity-50  px-1">
@@ -37,8 +92,9 @@ export default function RegisterPage() {
                                 type="text"
                                 placeholder="Enter your full name"
                                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 sm:py-4.5 pl-14 pr-6 transition-all duration-300 focus:bg-white focus:border-[#000000]/20 focus:ring-4 focus:ring-[#000000]/5 outline-none font-bold text-sm sm:text-base"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
                             />
                         </div>
                     </div>
@@ -56,8 +112,9 @@ export default function RegisterPage() {
                                 type="email"
                                 placeholder="name@example.com"
                                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 sm:py-4.5 pl-14 pr-6 transition-all duration-300 focus:bg-white focus:border-[#000000]/20 focus:ring-4 focus:ring-[#000000]/5 outline-none font-bold text-sm sm:text-base"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
                             />
                         </div>
                     </div>
@@ -79,8 +136,9 @@ export default function RegisterPage() {
                                 type="tel"
                                 placeholder="98765 43210"
                                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 sm:py-4.5 pl-24 pr-6 transition-all duration-300 focus:bg-white focus:border-[#000000]/20 focus:ring-4 focus:ring-[#000000]/5 outline-none font-bold text-sm sm:text-base"
-                                value={formData.phone}
-                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                required
                             />
                         </div>
                     </div>
@@ -98,15 +156,20 @@ export default function RegisterPage() {
                                 type="password"
                                 placeholder="••••••••"
                                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 sm:py-4.5 pl-14 pr-6 transition-all duration-300 focus:bg-white focus:border-[#000000]/20 focus:ring-4 focus:ring-[#000000]/5 outline-none font-bold text-sm sm:text-base"
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
                             />
                         </div>
                     </div>
 
-                    <button className="w-full bg-[#000000] text-white py-3 sm:py-3.5 rounded-full text-base font-bold  hover:opacity-90 transition-all shadow-xl flex items-center justify-center gap-3 group tracking-[0.1em] uppercase mt-4">
-                        Join Now
-                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
+                    <button 
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full bg-[#000000] text-white py-3 sm:py-3.5 rounded-full text-base font-bold hover:opacity-90 transition-all shadow-xl flex items-center justify-center gap-3 group tracking-[0.1em] uppercase mt-4 disabled:opacity-50"
+                    >
+                        {isLoading ? "Joining..." : "Join Now"}
+                        {!isLoading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />}
                     </button>
 
 
