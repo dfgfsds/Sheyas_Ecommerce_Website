@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Phone, Mail, ArrowRight, Lock } from "lucide-react";
@@ -17,10 +17,17 @@ export default function LoginPage() {
     const [isOtpSent, setIsOtpSent] = useState(false);
     const [otp, setOtp] = useState("");
     const [token, setToken] = useState<string | null>(null);
-    
+
     const router = useRouter();
-    const { setUser } = useUser();
+    const { login, isAuthenticated } = useUser();
     const { vendorId } = useVendor();
+
+    // Redirect if already logged in
+    useEffect(() => {
+        if (isAuthenticated) {
+            router.replace("/");
+        }
+    }, [isAuthenticated, router]);
 
     const handleMethodToggle = (method: "phone" | "email") => {
         setLoginMethod(method);
@@ -75,13 +82,13 @@ export default function LoginPage() {
                     const userId = res?.data?.user_id;
                     if (userId) {
                         localStorage.setItem("userId", userId);
-                        
+
                         // Sync Cart
                         const cartRes = await getCartApi(`user/${userId}`);
                         if (cartRes?.data?.length > 0) {
                             localStorage.setItem("cartId", cartRes.data[0].id);
                         }
-                        
+
                         alert("Login successful!");
                         window.location.href = "/";
                     } else {
@@ -105,10 +112,10 @@ export default function LoginPage() {
             setIsLoading(true);
             try {
                 const payload = { email: inputValue, password, vendor_id: vendorId };
-                
+
                 const res = await postSignInAPi(payload);
                 const userId = res?.data?.user_id || res?.data?.user?.id || res?.data?.id;
-                
+
                 if (userId) {
                     localStorage.setItem("userId", userId);
 
@@ -240,13 +247,13 @@ export default function LoginPage() {
                         </div>
                     )}
 
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         disabled={isLoading}
                         className={`w-full bg-[#000000] text-white py-3 sm:py-3.5 rounded-full text-sm sm:text-base font-bold transition-all shadow-xl flex items-center justify-center gap-3 group tracking-[0.1em] uppercase ${isLoading ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"}`}
                     >
-                        {isLoading 
-                            ? (loginMethod === "phone" && !isOtpSent ? "Sending..." : "Logging in...") 
+                        {isLoading
+                            ? (loginMethod === "phone" && !isOtpSent ? "Sending..." : "Logging in...")
                             : (loginMethod === "phone" && !isOtpSent ? "Send OTP" : "Login")}
                         {!isLoading && <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1.5 transition-transform" />}
                     </button>

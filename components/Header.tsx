@@ -6,12 +6,14 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
+import { useCartItem } from "@/context/CartItemContext";
 
 export default function Header() {
     const pathname = usePathname();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { user, isAuthenticated } = useUser();
+    const { cartItems } = useCartItem();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -24,8 +26,8 @@ export default function Header() {
         { name: "Home", path: "/" },
         { name: "Eid Collection", path: "/eid-collection" },
         { name: "Abaya", path: "/abaya" },
-        { name: "Contact Us", path: "/contact" },
-        { name: "About Us", path: "/about" },
+        { name: "Contact", path: "/contact" },
+        { name: "About", path: "/about" },
         { name: "Order Status", path: "/orders" },
     ];
 
@@ -72,8 +74,16 @@ export default function Header() {
                                     <User className="w-5 h-5" /> Account
                                 </Link>
                             )}
-                            <Link href="/cart" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[#000000] font-bold italic">
-                                <ShoppingBag className="w-5 h-5" /> Cart
+                            <Link href="/cart" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[#000000] font-bold italic relative">
+                                <div className="relative">
+                                    <ShoppingBag className="w-5 h-5" />
+                                    {mounted && cartItems?.length > 0 && (
+                                        <span className="absolute -top-1 -right-1 bg-black text-white text-[8px] w-3 h-3 rounded-full flex items-center justify-center font-bold">
+                                            {cartItems.length}
+                                        </span>
+                                    )}
+                                </div>
+                                Cart
                             </Link>
                         </div>
                     </div>
@@ -152,8 +162,13 @@ export default function Header() {
                                 <User className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
                             </Link>
                         )}
-                        <Link href="/cart" aria-label="Cart" className="hover:opacity-70 transition-opacity">
+                        <Link href="/cart" aria-label="Cart" className="hover:opacity-70 transition-opacity relative">
                             <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
+                            {mounted && cartItems?.length > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-black text-white text-[10px] min-w-[16px] h-4 rounded-full flex items-center justify-center font-bold px-1">
+                                    {cartItems.length}
+                                </span>
+                            )}
                         </Link>
                     </div>
                 </div>

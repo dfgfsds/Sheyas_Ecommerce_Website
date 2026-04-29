@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { User, Mail, Phone, Lock, ArrowRight } from "lucide-react";
@@ -17,8 +17,15 @@ export default function RegisterPage() {
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
-    const { login } = useUser();
+    const { login, isAuthenticated } = useUser();
     const { vendorId } = useVendor();
+
+    // Redirect if already logged in
+    useEffect(() => {
+        if (isAuthenticated) {
+            router.replace("/");
+        }
+    }, [isAuthenticated, router]);
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -163,7 +170,7 @@ export default function RegisterPage() {
                         </div>
                     </div>
 
-                    <button 
+                    <button
                         type="submit"
                         disabled={isLoading}
                         className="w-full bg-[#000000] text-white py-3 sm:py-3.5 rounded-full text-base font-bold hover:opacity-90 transition-all shadow-xl flex items-center justify-center gap-3 group tracking-[0.1em] uppercase mt-4 disabled:opacity-50"
