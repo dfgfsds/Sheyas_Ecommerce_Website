@@ -293,7 +293,7 @@ export default function ProfilePage() {
                     <h1 className="text-3xl font-serif italic text-[#000000]">My Account</h1>
                     <button
                         onClick={handleSignOut}
-                        className="flex items-center gap-2 px-4 py-2 text-gray-400 hover:text-black transition-colors font-bold text-xs uppercase tracking-widest"
+                        className="px-8 py-4 bg-black text-white rounded-full text-xs font-bold shadow-xl hover:opacity-90 transition-all flex items-center gap-3 uppercase tracking-widest"
                     >
                         <LogOut className="w-4 h-4" /> Logout
                     </button>
@@ -432,15 +432,6 @@ export default function ProfilePage() {
                     )}
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex items-center gap-8 mt-4">
-                    <button
-                        onClick={handleSignOut}
-                        className="px-10 py-4 bg-black text-white rounded-full text-sm font-bold shadow-xl hover:opacity-90 transition-all flex items-center gap-3 uppercase tracking-widest"
-                    >
-                        <LogOut className="w-4 h-4" /> Logout
-                    </button>
-                </div>
 
                 {/* Edit Profile Modal */}
                 {isEditProfileModalOpen && (
