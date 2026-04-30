@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Phone, Mail, ArrowRight, Lock, Eye, EyeOff, User } from "lucide-react";
@@ -37,6 +37,13 @@ export default function RegisterPage() {
             setFormData(prev => ({ ...prev, [name]: value }));
         }
     };
+
+    // Redirect if already logged in
+    useEffect(() => {
+        if (isAuthenticated) {
+            router.replace("/");
+        }
+    }, [isAuthenticated, router]);
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();

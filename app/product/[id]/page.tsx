@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { Star, Minus, Plus, Share2, Ruler, Truck, RefreshCw, CreditCard, ChevronDown } from "lucide-react";
+import { Star, Minus, Plus, Share2, Ruler, Truck, RefreshCw, CreditCard, ChevronDown, ShoppingBag, CheckCircle2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getProductWithVariantSizeApi } from "@/api-endpoints/products";
 import { useProducts } from "@/context/ProductsContext";
@@ -38,6 +38,7 @@ export default function ProductDetailPage() {
 
     const [quantity, setQuantity] = useState(1);
     const [selectedSize, setSelectedSize] = useState("");
+    const [isAdded, setIsAdded] = useState(false);
     const [mainImage, setMainImage] = useState("");
 
     // Update main image and selected size when data arrives
@@ -47,10 +48,44 @@ export default function ProductDetailPage() {
             setMainImage(firstImage.replace("http://ip/", "http://82.29.161.36/"));
 
             if (productData.variants?.length > 0 && productData.variants[0].sizes?.length > 0) {
-                setSelectedSize(productData.variants[0].sizes[0].product_size);
+                // Not auto-selecting size anymore
             }
         }
     }, [productData]);
+
+    // Sync quantity changes to server after item is added
+    React.useEffect(() => {
+        if (isAdded) {
+            syncQuantity();
+        }
+    }, [quantity, isAdded]);
+
+    const syncQuantity = async () => {
+        try {
+            const currentCartId = localStorage.getItem('cartId');
+            const userId = user?.data?.id || user?.id;
+            if (!currentCartId || !userId) return;
+
+            const selectedVariant = productData.variants?.find((v: any) =>
+                v.sizes?.some((s: any) => s.product_size === selectedSize)
+            );
+
+            const payload = {
+                cart: currentCartId,
+                user: userId,
+                vendor: vendorId,
+                created_by: userId,
+                product: productData.id,
+                quantity: quantity,
+                variant: selectedVariant?.id
+            };
+
+            await postCartitemApi("", payload);
+            if (refetchCart) refetchCart();
+        } catch (err) {
+            console.error("Error syncing quantity:", err);
+        }
+    };
 
     const handleAddToCart = async () => {
         if (!user || !user.id) {
@@ -65,9 +100,9 @@ export default function ProductDetailPage() {
 
             if (!currentCartId) {
                 const cartRes = await postCartCreateApi("", {
-                    user: user.id,
+                    user: userId,
                     vendor: vendorId,
-                    created_by: user.id
+                    created_by: userId
                 });
                 currentCartId = cartRes.data?.id || cartRes.data?.cart_id || cartRes.data?.data?.id;
                 if (currentCartId) {
@@ -85,9 +120,9 @@ export default function ProductDetailPage() {
 
             const payload = {
                 cart: currentCartId,
-                user: user.id,
+                user: userId,
                 vendor: vendorId,
-                created_by: user.id,
+                created_by: userId,
                 product: productData.id,
                 quantity: quantity,
                 variant: selectedVariant?.id
@@ -236,32 +271,50 @@ export default function ProductDetailPage() {
                         </div>
                     </div>
 
-                    {/* Quantity */}
-                    <div className="mb-10">
-                        <span className="text-sm font-bold  uppercase tracking-wider block mb-4">Quantity</span>
-                        <div className="inline-flex items-center border border-gray-200 rounded-full px-6 py-3">
-                            <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="hover:opacity-60 transition-opacity">
-                                <Minus className="w-4 h-4" />
-                            </button>
-                            <span className="w-12 text-center font-bold">{quantity}</span>
-                            <button onClick={() => setQuantity(quantity + 1)} className="hover:opacity-60 transition-opacity">
-                                <Plus className="w-4 h-4" />
-                            </button>
+                    {/* Quantity - Only show after size is selected */}
+                    {selectedSize && (
+                        <div className="mb-10 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            <span className="text-sm font-bold uppercase tracking-wider block mb-4">Quantity</span>
+                            <div className="inline-flex items-center border border-gray-200 rounded-full px-6 py-3 bg-white shadow-sm">
+                                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="hover:opacity-60 transition-opacity">
+                                    <Minus className="w-4 h-4" />
+                                </button>
+                                <span className="w-12 text-center font-bold">{quantity}</span>
+                                <button onClick={() => setQuantity(quantity + 1)} className="hover:opacity-60 transition-opacity">
+                                    <Plus className="w-4 h-4" />
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Action Buttons */}
-                    <div className="space-y-4 mb-12">
-                        <button
-                            onClick={handleAddToCart}
-                            disabled={isAddingToCart}
-                            className={`w-full border-2 border-[#000000] py-4 rounded-full text-lg font-bold italic transition-all ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#000000] hover:text-white'}`}
-                        >
-                            {isAddingToCart ? "Adding to cart..." : "Add to cart"}
-                        </button>
-                        {/* <button className="w-full bg-[#000000] text-white py-4 rounded-full text-lg font-bold italic hover:opacity-90 transition-all shadow-xl">
-                            Buy it now
-                        </button> */}
+                    <div className="space-y-6 mb-12">
+                        {!isAdded ? (
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={isAddingToCart}
+                                className={`w-full border-2 border-black py-4 rounded-full text-lg font-bold italic transition-all shadow-md ${isAddingToCart
+                                    ? 'opacity-50 cursor-not-allowed'
+                                    : !selectedSize
+                                        ? 'opacity-30 cursor-not-allowed'
+                                        : 'hover:bg-black hover:text-white bg-white text-black active:scale-[0.98]'
+                                    }`}
+                            >
+                                {isAddingToCart ? "Adding to bag..." : !selectedSize ? "Select a Size" : "Add to Cart"}
+                            </button>
+                        ) : (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <button
+                                    onClick={() => router.push("/cart")}
+                                    className="w-full bg-black text-white py-4 rounded-full text-lg font-bold italic hover:opacity-90 transition-all shadow-xl flex items-center justify-center gap-3 active:scale-[0.98]"
+                                >
+                                    <ShoppingBag className="w-5 h-5" /> Go to Bag
+                                </button>
+                                <p className="text-center text-xs font-bold text-green-600 flex items-center justify-center gap-2">
+                                    <CheckCircle2 className="w-4 h-4" /> Item added successfully!
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     {/*

@@ -151,6 +151,11 @@ export default function Header() {
                         </Link>
                         <Link href="/cart" aria-label="Cart" className="hover:opacity-70 transition-opacity">
                             <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
+                            {mounted && cartItems?.length > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-black text-white text-[10px] min-w-[16px] h-4 rounded-full flex items-center justify-center font-bold px-1">
+                                    {cartItems.length}
+                                </span>
+                            )}
                         </Link>
                     </div>
                 </div>

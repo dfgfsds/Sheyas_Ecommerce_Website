@@ -150,6 +150,11 @@ export default function ProfilePage() {
 
         const payload = {
             ...addressForm,
+            address_line1: addressForm.address_line_1,
+            address_line2: addressForm.address_line_2,
+            postal_code: addressForm.pincode,
+            mobile: addressForm.contact_number,
+            created_by: user.data?.name || user.name || "User",
             user: userId,
             vendor: vendorId,
             created_by: editingAddress ? editingAddress.created_by : (userData.name || userData.first_name || "User"),

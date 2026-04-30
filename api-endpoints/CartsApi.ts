@@ -57,9 +57,9 @@ export const getCartitemsApi = async (query: any) => {
 };
 
 // UPDATE CARTITEMS APIS 
-export const updateCartitemsApi = async (query: any) => {
+export const updateCartitemsApi = async (query: any, payload: any) => {
     return axios.patch(
-        `${ApiUrls.cartItem}${query}`
+        `${ApiUrls.cartItem}${query}`, payload
     );
 };
 
@@ -149,3 +149,18 @@ export const postCODPaymentApi = async (query: any, payload: any) => {
 
 
 
+// VENDOR DELIVERY DETAILS APIS
+export const getVendorDeliveryDetailsApi = async (vendorId: any) => {
+    return axios.get(`${ApiUrls.vendorDetailsDelivery}${vendorId}/`);
+};
+
+// PATCH USER SELECT ADDRESS API
+export const patchUserSelectAddressAPi = async (query: any, payload: any) => {
+    const formattedQuery = query.endsWith('/') ? query : `${query}/`;
+    return axios.patch(`${ApiUrls.updateSelectedAddress}/${formattedQuery}`, payload);
+};
+
+// GET DELIVERY DETAILS API
+export const getDeliveryDetailsApi = async (query: any) => {
+    return axios.get(`${ApiUrls.checkCourierCharge}${query}`);
+};

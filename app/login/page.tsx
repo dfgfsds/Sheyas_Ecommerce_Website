@@ -25,7 +25,7 @@ export default function LoginPage() {
     const otpInputRef = useRef<HTMLInputElement>(null);
 
     const router = useRouter();
-    const { setUser } = useUser();
+    const { login, isAuthenticated } = useUser();
     const { vendorId } = useVendor();
     const { showToast } = useToast();
 
@@ -44,6 +44,13 @@ export default function LoginPage() {
             otpInputRef.current.focus();
         }
     }, [isOtpSent]);
+
+    // Redirect if already logged in
+    useEffect(() => {
+        if (isAuthenticated) {
+            router.replace("/");
+        }
+    }, [isAuthenticated, router]);
 
     const handleMethodToggle = (method: "phone" | "email") => {
         setLoginMethod(method);
