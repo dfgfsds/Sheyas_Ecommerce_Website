@@ -6,7 +6,8 @@ import { getUserAPi } from "../api-endpoints/authendication";
 interface UserContextType {
   user: any;
   setUser: (user: any) => void;
-  login: (userData: any) => void; // ⬅ add this
+  login: (userData: any) => void;
+  logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: any;
@@ -44,12 +45,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const logout = () => {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('user');
+    setUserId(null);
+    setUser(null);
+    window.location.href = '/';
+  };
+
   return (
     <UserContext.Provider
       value={{
         user,
         setUser,
-        login, // ⬅ pass login
+        login,
+        logout,
         isAuthenticated: !!user,
         isLoading,
         error,

@@ -2,34 +2,49 @@
 
 import { Search, User, ShoppingBag, X } from "lucide-react";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useToast } from "@/context/ToastContext";
 import { useUser } from "@/context/UserContext";
-import { useCartItem } from "@/context/CartItemContext";
 
 export default function Header() {
     const pathname = usePathname();
+    const router = useRouter();
+    const { showToast } = useToast();
+    const { user } = useUser();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const { user, isAuthenticated } = useUser();
-    const { cartItems } = useCartItem();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    const userData = user?.data || user;
+    const isLoggedIn = mounted ? !!(user || localStorage.getItem('userId')) : false;
 
     const navItems = [
         { name: "Home", path: "/" },
         { name: "Eid Collection", path: "/eid-collection" },
         { name: "Abaya", path: "/abaya" },
-        { name: "Contact", path: "/contact" },
-        { name: "About", path: "/about" },
-        { name: "Order Status", path: "/orders" },
+        { name: "Contact Us", path: "/contact" },
+        { name: "About Us", path: "/about" },
+        { name: "Order Status", path: "/orders", protected: true },
     ];
+
+    const handleNavClick = (item: any, e: React.MouseEvent) => {
+        if (item.protected) {
+            const token = localStorage.getItem('userId');
+            if (!token) {
+                e.preventDefault();
+                showToast("Please login to view your orders", "warning");
+                router.push('/login');
+                setIsMenuOpen(false);
+                return;
+            }
+        }
+        setIsMenuOpen(false);
+    };
 
     return (
         <header className="w-full  relative">
@@ -52,7 +67,7 @@ export default function Header() {
                                 <Link
                                     key={item.path}
                                     href={item.path}
-                                    onClick={() => setIsMenuOpen(false)}
+                                    onClick={(e) => handleNavClick(item, e)}
                                     className={`text-xl font-semibold italic transition-colors ${pathname === item.path ? "text-[#000000] border-l-2 border-[#000000] pl-4" : "text-[#000000]"
                                         }`}
                                 >
@@ -62,28 +77,11 @@ export default function Header() {
                         </nav>
 
                         <div className="mt-auto pt-8 border-t border-gray-100 flex flex-col gap-6">
-                            {mounted && isAuthenticated ? (
-                                <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex flex-col gap-1 text-[#000000] font-bold italic">
-                                    <div className="flex items-center gap-3">
-                                        <User className="w-5 h-5" /> {userData?.name}
-                                    </div>
-                                    <span className="text-[10px] opacity-60 ml-8">{userData?.contact_number || userData?.mobile}</span>
-                                </Link>
-                            ) : (
-                                <Link href="/login" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[#000000] font-bold italic">
-                                    <User className="w-5 h-5" /> Account
-                                </Link>
-                            )}
-                            <Link href="/cart" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[#000000] font-bold italic relative">
-                                <div className="relative">
-                                    <ShoppingBag className="w-5 h-5" />
-                                    {mounted && cartItems?.length > 0 && (
-                                        <span className="absolute -top-1 -right-1 bg-black text-white text-[8px] w-3 h-3 rounded-full flex items-center justify-center font-bold">
-                                            {cartItems.length}
-                                        </span>
-                                    )}
-                                </div>
-                                Cart
+                            <Link href={isLoggedIn ? "/profile" : "/login"} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[#000000] font-bold italic">
+                                <User className="w-5 h-5" /> Account
+                            </Link>
+                            <Link href="/cart" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[#000000] font-bold italic">
+                                <ShoppingBag className="w-5 h-5" /> Cart
                             </Link>
                         </div>
                     </div>
@@ -108,6 +106,7 @@ export default function Header() {
                             <Link
                                 key={item.path}
                                 href={item.path}
+                                onClick={(e) => handleNavClick(item, e)}
                                 className={`transition-opacity pb-0.5 whitespace-nowrap ${pathname === item.path ? "border-b border-[#000000]" : ""
                                     }`}
                             >
@@ -147,22 +146,10 @@ export default function Header() {
                         >
                             <Search className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
                         </button>
-                        {mounted && isAuthenticated ? (
-                            <Link href="/profile" aria-label="Account" className="hidden sm:flex flex-col items-end hover:opacity-70 transition-opacity">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-black/40 leading-none mb-1">Welcome</span>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm font-bold italic">{userData?.name}</span>
-                                    <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-[10px] font-bold not-italic">
-                                        {userData?.name?.charAt(0)}
-                                    </div>
-                                </div>
-                            </Link>
-                        ) : (
-                            <Link href="/login" aria-label="Account" className="hidden sm:block hover:opacity-70 transition-opacity">
-                                <User className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
-                            </Link>
-                        )}
-                        <Link href="/cart" aria-label="Cart" className="hover:opacity-70 transition-opacity relative">
+                        <Link href={isLoggedIn ? "/profile" : "/login"} aria-label="Account" className="hidden sm:block hover:opacity-70 transition-opacity">
+                            <User className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
+                        </Link>
+                        <Link href="/cart" aria-label="Cart" className="hover:opacity-70 transition-opacity">
                             <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
                             {mounted && cartItems?.length > 0 && (
                                 <span className="absolute -top-1 -right-1 bg-black text-white text-[10px] min-w-[16px] h-4 rounded-full flex items-center justify-center font-bold px-1">
