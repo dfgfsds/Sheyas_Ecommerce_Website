@@ -2,14 +2,26 @@
 
 import { Search, User, ShoppingBag, X } from "lucide-react";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useToast } from "@/context/ToastContext";
+import { useUser } from "@/context/UserContext";
 
 export default function Header() {
     const pathname = usePathname();
+    const router = useRouter();
+    const { showToast } = useToast();
+    const { user } = useUser();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const isLoggedIn = mounted ? !!(user || localStorage.getItem('userId')) : false;
 
     const navItems = [
         { name: "Home", path: "/" },
@@ -17,8 +29,22 @@ export default function Header() {
         { name: "Abaya", path: "/abaya" },
         { name: "Contact Us", path: "/contact" },
         { name: "About Us", path: "/about" },
-        { name: "Order Status", path: "/orders" },
+        { name: "Order Status", path: "/orders", protected: true },
     ];
+
+    const handleNavClick = (item: any, e: React.MouseEvent) => {
+        if (item.protected) {
+            const token = localStorage.getItem('userId');
+            if (!token) {
+                e.preventDefault();
+                showToast("Please login to view your orders", "warning");
+                router.push('/login');
+                setIsMenuOpen(false);
+                return;
+            }
+        }
+        setIsMenuOpen(false);
+    };
 
     return (
         <header className="w-full  relative">
@@ -41,7 +67,7 @@ export default function Header() {
                                 <Link
                                     key={item.path}
                                     href={item.path}
-                                    onClick={() => setIsMenuOpen(false)}
+                                    onClick={(e) => handleNavClick(item, e)}
                                     className={`text-xl font-semibold italic transition-colors ${pathname === item.path ? "text-[#000000] border-l-2 border-[#000000] pl-4" : "text-[#000000]"
                                         }`}
                                 >
@@ -51,7 +77,7 @@ export default function Header() {
                         </nav>
 
                         <div className="mt-auto pt-8 border-t border-gray-100 flex flex-col gap-6">
-                            <Link href="/login" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[#000000] font-bold italic">
+                            <Link href={isLoggedIn ? "/profile" : "/login"} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[#000000] font-bold italic">
                                 <User className="w-5 h-5" /> Account
                             </Link>
                             <Link href="/cart" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[#000000] font-bold italic">
@@ -80,6 +106,7 @@ export default function Header() {
                             <Link
                                 key={item.path}
                                 href={item.path}
+                                onClick={(e) => handleNavClick(item, e)}
                                 className={`transition-opacity pb-0.5 whitespace-nowrap ${pathname === item.path ? "border-b border-[#000000]" : ""
                                     }`}
                             >
@@ -119,7 +146,7 @@ export default function Header() {
                         >
                             <Search className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
                         </button>
-                        <Link href="/login" aria-label="Account" className="hidden sm:block hover:opacity-70 transition-opacity">
+                        <Link href={isLoggedIn ? "/profile" : "/login"} aria-label="Account" className="hidden sm:block hover:opacity-70 transition-opacity">
                             <User className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
                         </Link>
                         <Link href="/cart" aria-label="Cart" className="hover:opacity-70 transition-opacity">

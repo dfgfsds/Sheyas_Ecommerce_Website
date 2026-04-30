@@ -12,6 +12,9 @@ import { useVendor } from "@/context/VendorContext";
 import { useUser } from "@/context/UserContext";
 import { useCartItem } from "@/context/CartItemContext";
 import { postCartCreateApi, postCartitemApi } from "@/api-endpoints/CartsApi";
+import { useToast } from "@/context/ToastContext";
+import { safeErrorLog } from "@/utils/error-handler";
+import { handleApiError } from "@/utils/error-utils";
 
 export default function ProductDetailPage() {
     const { id } = useParams();
@@ -30,6 +33,7 @@ export default function ProductDetailPage() {
     const { vendorId } = useVendor();
     const { user } = useUser();
     const { refetchCart } = useCartItem();
+    const { showToast } = useToast();
     const [isAddingToCart, setIsAddingToCart] = useState(false);
 
     const [quantity, setQuantity] = useState(1);
@@ -50,7 +54,7 @@ export default function ProductDetailPage() {
 
     const handleAddToCart = async () => {
         if (!user || !user.id) {
-            alert("Please login to add items to your cart.");
+            showToast("Please login to add items to your cart", "warning");
             router.push("/login");
             return;
         }
@@ -91,15 +95,10 @@ export default function ProductDetailPage() {
 
             await postCartitemApi("", payload);
             if (refetchCart) refetchCart();
-            alert("Added to cart successfully!");
+            showToast("Added to cart successfully!", "success");
         } catch (err: any) {
-            console.error("Error adding to cart:", err);
-            if (err.response) {
-                console.error("Error response data:", err.response.data);
-                alert(`Failed to add to cart: ${JSON.stringify(err.response.data)}`);
-            } else {
-                alert("Failed to add to cart. Please try again.");
-            }
+            safeErrorLog("Error adding to cart", err);
+            showToast(handleApiError(err), "error");
         } finally {
             setIsAddingToCart(false);
         }
