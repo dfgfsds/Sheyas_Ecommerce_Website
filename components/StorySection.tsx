@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 interface StorySectionProps {
     title: string;
@@ -16,33 +19,52 @@ export default function StorySection({
     imageLeft = false
 }: StorySectionProps) {
     return (
-        <section className="max-w-[1440px] mx-auto px-4 sm:px-12 py-12 sm:py-18">
-            <div className={`flex flex-col ${imageLeft ? 'md:flex-row-reverse' : 'md:flex-row'} bg-gray-100 rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-sm`}>
+        <section className="max-w-[1440px] mx-auto px-4 sm:px-12 py-12 sm:py-18 overflow-hidden">
+            <motion.div 
+                className={`flex flex-col ${imageLeft ? 'md:flex-row-reverse' : 'md:flex-row'} bg-gray-100 rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-sm`}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+            >
 
                 {/* Text Content */}
-                <div className="flex-1 p-8 sm:p-16 lg:p-20 flex flex-col justify-center items-start order-2 md:order-1">
+                <motion.div 
+                    className="flex-1 p-8 sm:p-16 lg:p-20 flex flex-col justify-center items-start order-2 md:order-1"
+                    initial={{ opacity: 0, x: imageLeft ? 30 : -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
+                >
                     <h2 className="text-2xl sm:text-4xl font-serif text-[#000000] mb-4 sm:mb-6 italic tracking-wide">
                         {title}
                     </h2>
                     <p className="text-xs sm:text-base text-gray-800 leading-relaxed tracking-wide mb-8 sm:mb-10 max-w-md italic">
                         {description}
                     </p>
-                    <button className="bg-[#000000] text-white px-8 sm:px-10 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-medium hover:opacity-90 transition-all italic shadow-lg">
+                    <motion.button 
+                        className="bg-[#000000] text-white px-8 sm:px-10 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-medium hover:opacity-90 transition-all italic shadow-lg"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
                         {buttonText}
-                    </button>
-                </div>
+                    </motion.button>
+                </motion.div>
 
                 {/* Image Content */}
-                <div className="flex-1 relative h-[300px] sm:h-[400px] md:h-[500px] order-1 md:order-2">
+                <motion.div 
+                    className="flex-1 relative h-[300px] sm:h-[400px] md:h-[500px] order-1 md:order-2"
+                    initial={{ opacity: 0, scale: 1.1 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                >
                     <Image
                         src={imageSrc}
                         alt={title}
                         fill
                         className="object-cover"
                     />
-                </div>
+                </motion.div>
 
-            </div>
+            </motion.div>
         </section>
     );
 }

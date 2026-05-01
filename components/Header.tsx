@@ -86,7 +86,7 @@ export default function Header() {
     };
 
     return (
-        <header className="w-full  relative">
+        <header className="w-full sticky top-0 z-[100] bg-white">
             {/* Mobile Menu Overlay */}
             {isMenuOpen && (
                 <div className="fixed inset-0 z-[110] bg-[#000000]/40 backdrop-blur-sm lg:hidden" onClick={() => setIsMenuOpen(false)}>
@@ -107,7 +107,7 @@ export default function Header() {
                                     key={item.path}
                                     href={item.path}
                                     onClick={(e) => handleNavClick(item, e)}
-                                    className={`text-xl font-semibold italic transition-colors ${pathname === item.path ? "text-[#000000] border-l-2 border-[#000000] pl-4" : "text-[#000000]"
+                                    className={`text-xl  italic transition-colors ${pathname === item.path ? "text-[#000000] border-l-2 border-[#000000] pl-4" : "text-[#000000]"
                                         }`}
                                 >
                                     {item.name}
@@ -137,7 +137,7 @@ export default function Header() {
 
             {/* Navbar */}
             <div className="bg-white border-b border-gray-100">
-                <div className="container mx-auto px-4 py-3 sm:py-5 flex items-center justify-between">
+                <div className="container mx-auto px-4 py-3 sm:py-8 flex items-center justify-between">
 
                     {/* Desktop Nav Links (Center on lg) */}
                     <nav className="hidden lg:flex flex-1 items-center gap-8 text-[#000000] text-lg font-bold italic justify-center order-2">

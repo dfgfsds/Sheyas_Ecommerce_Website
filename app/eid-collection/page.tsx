@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import ProductCard, { Product } from "@/components/ProductCard";
 import { useProducts } from "@/context/ProductsContext";
+import { motion } from "framer-motion";
 
 export default function EidCollectionPage() {
     const { products: apiProducts, isLoading } = useProducts();
@@ -67,11 +68,34 @@ export default function EidCollectionPage() {
                 </div>
             </div> */}
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12 my-10">
+            <motion.div 
+                className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12 my-10"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ margin: "-50px" }}
+                variants={{
+                    hidden: { opacity: 0 },
+                    visible: {
+                        opacity: 1,
+                        transition: {
+                            staggerChildren: 0.1
+                        }
+                    }
+                }}
+            >
                 {paginatedProducts.map((product: Product) => (
-                    <ProductCard key={product.id} product={product} />
+                    <motion.div
+                        key={product.id}
+                        variants={{
+                            hidden: { opacity: 0, y: 30 },
+                            visible: { opacity: 1, y: 0 }
+                        }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <ProductCard product={product} />
+                    </motion.div>
                 ))}
-            </div>
+            </motion.div>
 
             {/* Bottom Pagination */}
             <div className="mt-24 flex items-center justify-center gap-8">
