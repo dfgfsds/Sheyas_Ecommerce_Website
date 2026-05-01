@@ -41,6 +41,7 @@ const codPay = `${baseUrl}/cod-pay-now/`;
 const sendSmsOtpUser = `${baseUrl}/send-sms-opt-user/`;
 const otpVerify = `${baseUrl}/verify-sms-opt-return-user/`;
 const cartItemProductSizeVariants = `${baseUrl}/cart_with_cart_items_product_or_variant_refined/`;
+const sendQuoteRequest = `${baseUrl}/send_quote_request_api/`;
 
 export default {
   cartCreate,
@@ -80,5 +81,6 @@ export default {
   baseUrl,
   sendSmsOtpUser,
   otpVerify,
-  cartItemProductSizeVariants
+  cartItemProductSizeVariants,
+  sendQuoteRequest
 };
