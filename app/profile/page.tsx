@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Edit2, Plus, Info, LogOut, MapPin, X, Trash2, CheckCircle2, Home, Briefcase, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@/context/UserContext";
@@ -24,6 +24,7 @@ function ProfileContent() {
     const { user, setUser, logout } = useUser();
     const { vendorId } = useVendor();
     const { showToast } = useToast();
+    const router = useRouter();
     const [addresses, setAddresses] = useState<any[]>([]);
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
     const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
@@ -31,8 +32,13 @@ function ProfileContent() {
     const [editingAddress, setEditingAddress] = useState<any>(null);
     const [addressToDelete, setAddressToDelete] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const searchParams = useSearchParams();
     const action = searchParams.get("action");
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Form states
     const [profileName, setProfileName] = useState("");
@@ -289,13 +295,16 @@ function ProfileContent() {
         logout();
     };
 
+    useEffect(() => {
+        if (mounted && !user && !localStorage.getItem('userId')) {
+            router.push("/login");
+        }
+    }, [user, mounted, router]);
+
     if (!user) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#fcfcfc]">
-                <div className="text-center">
-                    <h2 className="text-xl font-medium mb-4">Please login to view your profile</h2>
-                    <Link href="/login" className="px-6 py-2 bg-black text-white rounded-full font-bold">Login</Link>
-                </div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#000000]"></div>
             </div>
         );
     }

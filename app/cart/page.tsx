@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Trash2, Minus, Plus, MapPin, PlusCircle, Loader2, Tag, X, CheckCircle } from "lucide-react";
+import { Trash2, Minus, Plus, MapPin, PlusCircle, Loader2, Tag, X, CheckCircle, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCartItem } from "@/context/CartItemContext";
 import { useUser } from "@/context/UserContext";
@@ -29,8 +29,8 @@ import { useRouter } from "next/navigation";
 import { useAuthRedirect } from "@/context/useAuthRedirect";
 
 export default function CartPage() {
-    // Redirect to login if not authenticated
-    useAuthRedirect({ requireAuth: true });
+    // Redirect logic handled manually in the render below to show custom UI
+    // useAuthRedirect({ requireAuth: true });
 
     const { refetchCart } = useCartItem();
     const { user, isLoading: isUserLoading } = useUser();
@@ -290,7 +290,6 @@ export default function CartPage() {
 
                     setOrderId(finalOrderId);
                     setPaymentSuccess(true);
-                    // Invalidate all related queries to clear the cart
                     await queryClient.invalidateQueries({ queryKey: ['getCartItemsDetailed'] });
                     if (refetchCart) await refetchCart();
                 }
@@ -302,10 +301,46 @@ export default function CartPage() {
         }
     };
 
-    if (isUserLoading || isDetailedLoading || !user) {
+    if (isUserLoading && hasToken) {
         return (
             <div className="flex h-[70vh] items-center justify-center">
-                <Loader2 className="w-10 h-10 animate-spin opacity-20" />
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="w-10 h-10 animate-spin opacity-20" />
+                    <p className="text-sm font-medium italic opacity-40">Loading your cart</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!user && !isUserLoading) {
+        return (
+            <main className="max-w-[1440px] mx-auto px-6 sm:px-12 py-14 text-center">
+                <div className="max-w-md mx-auto bg-gray-50 rounded-[3rem] p-12 border border-dashed border-gray-200">
+                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-3.5 shadow-sm">
+                        <User className="w-10 h-10 text-gray-500" />
+                    </div>
+                    <h2 className="text-2xl font-serif italic mb-3">Your cart is waiting</h2>
+                    <p className="text-gray-500 mb-6 italic leading-relaxed">
+                        Please log in to view your saved items, add new products, and complete your purchase.
+                    </p>
+                    <Link
+                        href="/login"
+                        className="inline-flex items-center justify-center px-12 py-4 bg-black text-white rounded-full text-sm font-bold hover:opacity-90 transition-all uppercase tracking-widest shadow-lg"
+                    >
+                        Login to continue
+                    </Link>
+                </div>
+            </main>
+        );
+    }
+
+    if (isDetailedLoading) {
+        return (
+            <div className="flex h-[70vh] items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="w-10 h-10 animate-spin opacity-20" />
+                    <p className="text-sm font-medium italic opacity-40">Please wait! Fetching your cart items</p>
+                </div>
             </div>
         );
     }

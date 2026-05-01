@@ -14,7 +14,7 @@ export default function Header() {
     const pathname = usePathname();
     const router = useRouter();
     const { showToast } = useToast();
-    const { user } = useUser();
+    const { user, isAuthenticated } = useUser();
     const { products: apiData } = useProducts();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -52,7 +52,7 @@ export default function Header() {
         return () => window.removeEventListener("keydown", handleEsc);
     }, []);
 
-    const isLoggedIn = mounted ? !!(user || localStorage.getItem('userId')) : false;
+    const isLoggedIn = mounted ? isAuthenticated : false;
 
     const products = apiData || [];
     const filteredProducts = searchQuery.trim().length > 1

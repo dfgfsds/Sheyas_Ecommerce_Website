@@ -1,45 +1,111 @@
 "use client";
-
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Loader2 } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
+import axios from "axios";
+import ApiUrls from "@/api-endpoints/ApiUrls";
+import { useToast } from "@/context/ToastContext";
+import { useVendor } from "@/context/VendorContext";
+import { handleApiError } from "@/utils/error-utils";
 
 export default function ContactPage() {
+    const { showToast } = useToast();
+    const { vendorId } = useVendor();
+    const [loading, setLoading] = useState(false);
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        contact_number: "",
+        description: "",
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        if (name === "contact_number") {
+            const digitsOnly = value.replace(/\D/g, "").slice(0, 10);
+            setForm({ ...form, contact_number: digitsOnly });
+        } else {
+            setForm({ ...form, [name]: value });
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!form.name || !form.email || !form.contact_number || !form.description) {
+            showToast("Please fill in all required fields.", "warning");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            await axios.post(ApiUrls?.sendQuoteRequest, { 
+                ...form, 
+                vendor_id: vendorId 
+            });
+            showToast("Message sent successfully!", "success");
+            setForm({ name: "", email: "", contact_number: "", description: "" });
+        } catch (err: any) {
+            showToast(handleApiError(err), "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
-        <main className="min-h-screen  py-12 sm:py-20 px-6 sm:px-12 bg-white relative">
+        <main className="min-h-screen py-12 sm:py-20 px-6 sm:px-12 bg-white relative">
 
             <div className="max-w-[800px] mx-auto">
                 {/* Header */}
                 <h1 className="text-3xl sm:text-5xl text-[#000000] text-center mb-10 sm:mb-16 italic font-serif opacity-80">Contact Us</h1>
 
                 {/* Contact Form */}
-                <form className="space-y-4 sm:space-y-6 mb-16 sm:mb-24">
+                <form className="space-y-4 sm:space-y-6 mb-16 sm:mb-24" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                         <input
                             type="text"
+                            name="name"
                             placeholder="Name"
+                            value={form.name}
+                            onChange={handleChange}
                             className="w-full bg-white border border-[#000000]/30 rounded-md py-3 sm:py-3.5 px-6 italic focus:outline-none focus:border-[#6b4a3a] text-sm sm:text-base"
                         />
                         <input
                             type="email"
+                            name="email"
                             placeholder="Email *"
+                            value={form.email}
+                            onChange={handleChange}
                             className="w-full bg-white border border-[#000000]/30 rounded-md py-3 sm:py-3.5 px-6 italic focus:outline-none focus:border-[#6b4a3a] text-sm sm:text-base"
                             required
                         />
                     </div>
                     <input
                         type="tel"
+                        name="contact_number"
                         placeholder="Phone number"
+                        value={form.contact_number}
+                        onChange={handleChange}
+                        maxLength={10}
                         className="w-full bg-white border border-[#000000]/30 rounded-md py-3 sm:py-3.5 px-6 italic focus:outline-none focus:border-[#000000] text-sm sm:text-base"
                     />
                     <textarea
+                        name="description"
                         placeholder="Comment"
+                        value={form.description}
+                        onChange={handleChange}
                         rows={5}
                         className="w-full bg-white border border-[#000000]/30 rounded-md py-4 px-6 italic focus:outline-none focus:border-[#000000] text-sm sm:text-base"
                     ></textarea>
 
                     <div className="flex justify-center sm:justify-start">
-                        <button className="bg-[#000000] text-white px-12 py-3 sm:py-3.5 rounded-full text-base font-bold italic hover:opacity-90 transition-all shadow-md w-full sm:w-auto">
-                            Send
+                        <button 
+                            type="submit"
+                            disabled={loading}
+                            className="bg-[#000000] text-white px-12 py-3 sm:py-3.5 rounded-full text-base font-bold italic hover:opacity-90 transition-all shadow-md w-full sm:w-auto flex items-center justify-center gap-2"
+                        >
+                            {loading && <Loader2 className="w-5 h-5 animate-spin" />}
+                            {loading ? "Sending..." : "Send"}
                         </button>
                     </div>
                 </form>
