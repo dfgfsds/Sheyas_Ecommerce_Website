@@ -46,47 +46,49 @@ export default function Home() {
       <Banner />
 
       {/* Featured Collection Section */}
-      <section className="max-w-[1440px] mx-auto px-4 sm:px-12 py-12 sm:py-16">
-        <motion.div 
-          className="flex items-center justify-between mb-8 sm:mb-10"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="text-xl sm:text-3xl font-serif text-[#000000] italic">Eid Collection Highlights</h2>
-          <a href="/eid-collection" className="text-xs sm:text-base text-[#000000] border-b border-[#000000] pb-1 hover:opacity-70 transition-all italic whitespace-nowrap">
-            View All
-          </a>
-        </motion.div>
+      {featuredProducts.length > 0 && (
+        <section className="max-w-[1440px] mx-auto px-4 sm:px-12 py-12 sm:py-16">
+          <motion.div
+            className="flex items-center justify-between mb-8 sm:mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-xl sm:text-3xl font-serif text-[#000000] italic">Eid Collection Highlights</h2>
+            <a href="/eid-collection" className="text-xs sm:text-base text-[#000000] border-b border-[#000000] pb-1 hover:opacity-70 transition-all italic whitespace-nowrap">
+              View All
+            </a>
+          </motion.div>
 
-        <motion.div 
-          className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ margin: "-100px" }}
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: {
-                staggerChildren: 0.1
+          <motion.div
+            className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ margin: "-100px" }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.1
+                }
               }
-            }
-          }}
-        >
-          {featuredProducts.map((product: Product) => (
-            <motion.div
-              key={product.id}
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0 }
-              }}
-            >
-              <ProductCard product={product} />
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
+            }}
+          >
+            {featuredProducts.map((product: Product) => (
+              <motion.div
+                key={product.id}
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0 }
+                }}
+              >
+                <ProductCard product={product} />
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
+      )}
 
       {/* Story Sections */}
       <StorySection
