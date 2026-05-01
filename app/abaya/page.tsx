@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ChevronDown, Filter as FilterIcon, SlidersHorizontal } from "lucide-react";
 import ProductCard, { Product } from "@/components/ProductCard";
 import { useProducts } from "@/context/ProductsContext";
+import { motion } from "framer-motion";
 
 import { useState } from "react";
 
@@ -93,11 +94,34 @@ export default function AbayaPage() {
                 </div>
 
                 {/* Product Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                <motion.div 
+                    className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ margin: "-50px" }}
+                    variants={{
+                        hidden: { opacity: 0 },
+                        visible: {
+                            opacity: 1,
+                            transition: {
+                                staggerChildren: 0.1
+                            }
+                        }
+                    }}
+                >
                     {paginatedProducts.map((product: Product) => (
-                        <ProductCard key={product.id} product={product} />
+                        <motion.div
+                            key={product.id}
+                            variants={{
+                                hidden: { opacity: 0, y: 30 },
+                                visible: { opacity: 1, y: 0 }
+                            }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <ProductCard product={product} />
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
 
                 {/* Bottom Pagination */}
                 <div className="mt-24 flex items-center justify-center gap-8">
