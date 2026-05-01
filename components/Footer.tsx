@@ -31,7 +31,7 @@ export default function Footer() {
                 </div>
 
                 {/* Center - Newsletter */}
-                <div className="flex-1 flex flex-col items-center">
+                {/* <div className="flex-1 flex flex-col items-center">
                     <p className="mb-4 text-sm font-medium tracking-widest uppercase">Sign up for updates</p>
                     <div className="border border-[#e7dcd4]/30 rounded-full px-6 py-3 flex items-center w-full max-w-[400px] bg-white/5 focus-within:bg-white/10 transition-colors">
                         <input
@@ -41,12 +41,16 @@ export default function Footer() {
                         />
                         <button className="ml-2 text-xl hover:translate-x-1 transition-transform cursor-pointer">→</button>
                     </div>
-                </div>
+                </div> */}
 
                 {/* Right - Social Icons */}
                 <div className="flex-1 flex justify-end gap-8">
-                    <FaFacebookF className="w-5 h-5 cursor-pointer hover:opacity-70 transition-opacity" />
-                    <FaInstagram className="w-5 h-5 cursor-pointer hover:opacity-70 transition-opacity" />
+                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+                        <FaFacebookF className="w-5 h-5 cursor-pointer hover:opacity-70 transition-opacity" />
+                    </a>
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+                        <FaInstagram className="w-5 h-5 cursor-pointer hover:opacity-70 transition-opacity" />
+                    </a>
                 </div>
 
             </div>
