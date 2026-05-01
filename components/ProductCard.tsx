@@ -3,18 +3,20 @@ import { Star } from "lucide-react";
 
 import Link from "next/link";
 
+export interface Product {
+    id: number;
+    name: string;
+    oldPrice: string;
+    newPrice: string;
+    rating: number;
+    reviews: number;
+    image: string;
+    onSale: boolean;
+    categoryName?: string;
+}
+
 interface ProductProps {
-    product: {
-        id: number;
-        name: string;
-        oldPrice: string;
-        newPrice: string;
-        rating: number;
-        reviews: number;
-        image: string;
-        onSale: boolean;
-        categoryName: string;
-    };
+    product: Product;
 }
 
 import { useState } from "react";
