@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { ChevronDown, Filter as FilterIcon, SlidersHorizontal } from "lucide-react";
-import ProductCard from "@/components/ProductCard";
+import ProductCard, { Product } from "@/components/ProductCard";
 import { useProducts } from "@/context/ProductsContext";
 
 import { useState } from "react";
@@ -29,7 +29,7 @@ export default function AbayaPage() {
             onSale: p.discount ? parseFloat(p.discount) > parseFloat(p.price) : false,
             categoryName: p.category_name || "",
         };
-    }) : [];
+    }) : [] as Product[];
 
     const totalPages = Math.ceil(displayProducts.length / productsPerPage);
     const paginatedProducts = displayProducts.slice(
@@ -94,7 +94,7 @@ export default function AbayaPage() {
 
                 {/* Product Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                    {paginatedProducts.map((product: any) => (
+                    {paginatedProducts.map((product: Product) => (
                         <ProductCard key={product.id} product={product} />
                     ))}
                 </div>

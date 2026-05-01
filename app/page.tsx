@@ -2,7 +2,7 @@
 
 import EleganceSection from "@/components/EleganceSection";
 import Banner from "@/components/Banner";
-import ProductCard from "@/components/ProductCard";
+import ProductCard, { Product } from "@/components/ProductCard";
 import StorySection from "@/components/StorySection";
 import { useProducts } from "@/context/ProductsContext";
 
@@ -24,8 +24,9 @@ export default function Home() {
       reviews: 0,
       image: imageUrl,
       onSale: p.discount ? parseFloat(p.discount) > parseFloat(p.price) : false,
+      categoryName: p.category_name || "Collection",
     };
-  }) : [];
+  }) : [] as Product[];
 
   const featuredProducts = displayProducts.slice(0, 4);
 
@@ -53,7 +54,7 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {featuredProducts.map((product) => (
+          {featuredProducts.map((product: Product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

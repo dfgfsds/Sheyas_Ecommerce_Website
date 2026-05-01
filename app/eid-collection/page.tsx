@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import ProductCard from "@/components/ProductCard";
+import ProductCard, { Product } from "@/components/ProductCard";
 import { useProducts } from "@/context/ProductsContext";
 
 export default function EidCollectionPage() {
@@ -27,7 +27,7 @@ export default function EidCollectionPage() {
             onSale: p.discount ? parseFloat(p.discount) > parseFloat(p.price) : false,
             categoryName: p.category_name || "",
         };
-    }) : [];
+    }) : [] as Product[];
 
     const totalPages = Math.ceil(displayProducts.length / productsPerPage);
     const paginatedProducts = displayProducts.slice(
@@ -68,7 +68,7 @@ export default function EidCollectionPage() {
             </div> */}
 
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12 my-10">
-                {paginatedProducts.map((product: any) => (
+                {paginatedProducts.map((product: Product) => (
                     <ProductCard key={product.id} product={product} />
                 ))}
             </div>
