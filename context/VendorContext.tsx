@@ -14,7 +14,7 @@ export const VendorProvider = ({ children }: { children: ReactNode }) => {
 
 
   useEffect(() => {
-    const storedId: any = 12;
+    const storedId: any = 160;
     if (storedId) setVendorId(storedId);
   }, []);
 
