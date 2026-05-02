@@ -7,7 +7,7 @@ export default function NotFound() {
     return (
         <main className="min-h-[80vh] flex items-center justify-center px-6 py-24 text-center">
             <div className="max-w-md w-full space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                
+
                 {/* 404 Visual */}
                 <div className="relative">
                     <h1 className="text-[12rem] sm:text-[16rem] font-serif italic text-gray-50 leading-none select-none">
@@ -26,7 +26,7 @@ export default function NotFound() {
                     </p>
 
                     <div className="pt-8">
-                        <Link 
+                        <Link
                             href="/"
                             className="inline-flex items-center gap-3 bg-[#000000] text-white px-10 py-4 rounded-full text-base font-bold transition-all hover:opacity-90 shadow-xl group"
                         >
@@ -38,10 +38,10 @@ export default function NotFound() {
 
                 {/* Optional: Navigation Suggestion */}
                 <div className="pt-12 grid grid-cols-2 gap-4">
-                    <Link href="/eid-collection" className="text-xs font-bold uppercase tracking-widest text-[#000000]/60 hover:text-[#000000] transition-colors border border-gray-100 rounded-2xl py-4 italic">
+                    <Link href="/products" className="text-xs font-bold uppercase tracking-widest text-[#000000]/60 hover:text-[#000000] transition-colors border border-gray-100 rounded-2xl py-4 italic">
                         New Collection
                     </Link>
-                    <Link href="/eid-collection" className="text-xs font-bold uppercase tracking-widest text-[#000000]/60 hover:text-[#000000] transition-colors border border-gray-100 rounded-2xl py-4 italic">
+                    <Link href="/products" className="text-xs font-bold uppercase tracking-widest text-[#000000]/60 hover:text-[#000000] transition-colors border border-gray-100 rounded-2xl py-4 italic">
                         Best Sellers
                     </Link>
                 </div>

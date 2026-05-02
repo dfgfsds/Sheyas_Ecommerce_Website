@@ -13,7 +13,7 @@ interface StorySectionProps {
     imageLeft?: boolean;
 }
 
-export default function StorySection({
+export default function AboutSection({
     title,
     description,
     buttonText,
@@ -22,7 +22,7 @@ export default function StorySection({
     imageLeft = false
 }: StorySectionProps) {
     return (
-        <section className="max-w-[1440px] mx-auto px-4 sm:px-12 pt-4 pb-6 md:pt-10 md:pb-12 overflow-hidden">
+        <section className="max-w-[1440px] mx-auto px-4 sm:px-12 pt-10 pb-[75px] md:pt-14 md:pb-24 overflow-hidden">
             <motion.div
                 className={`flex flex-col ${imageLeft ? 'md:flex-row-reverse' : 'md:flex-row'} bg-gray-100 rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-sm`}
                 initial={{ opacity: 0, y: 50 }}

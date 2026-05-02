@@ -32,7 +32,7 @@ export function CartItemProvider({ children }: { children: ReactNode }) {
     return (
         <CartItemContext.Provider
             value={{
-                cartItem: data || [],
+                cartItem: data?.data || [],
                 isAuthenticated: !!data,
                 isLoading,
                 refetchCart: refetch,

@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { VendorProvider } from "@/context/VendorContext";
 import { ProductsProvider } from "@/context/ProductsContext";
+import { CategoriesProvider } from "@/context/CategoriesContext";
 import { UserProvider } from "@/context/UserContext";
 import { CartItemProvider } from "@/context/CartItemContext";
 import { ToastProvider } from "@/context/ToastContext";
@@ -18,10 +19,12 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         <VendorProvider>
           <UserProvider>
             <CartItemProvider>
-              <ProductsProvider>
-                <ToasterProvider />
-                {children}
-              </ProductsProvider>
+              <CategoriesProvider>
+                <ProductsProvider>
+                  <ToasterProvider />
+                  {children}
+                </ProductsProvider>
+              </CategoriesProvider>
             </CartItemProvider>
           </UserProvider>
         </VendorProvider>
