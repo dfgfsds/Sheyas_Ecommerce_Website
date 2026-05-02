@@ -348,7 +348,7 @@ export default function CartPage() {
         <main className="max-w-[1440px] mx-auto px-6 sm:px-12 py-16 text-gray-800">
             <div className="flex items-center justify-between mb-12">
                 <h1 className="text-4xl sm:text-5xl text-[#000000] font-serif italic tracking-wide">Your cart</h1>
-                <Link href="/eid-collection" className="text-lg font-bold border-b border-[#000000] pb-0.5 hover:cursor-pointer text-[#000000]">
+                <Link href="/products" className="text-lg font-bold border-b border-[#000000] pb-0.5 hover:cursor-pointer text-[#000000]">
                     Continue shopping
                 </Link>
             </div>
@@ -578,7 +578,7 @@ export default function CartPage() {
                         <p className="text-2xl font-serif italic text-black">Your cart is currently empty.</p>
                         <p className="text-sm text-gray-500">Find something you love in our collection.</p>
                     </div>
-                    <Link href="/eid-collection">
+                    <Link href="/products">
                         <button className="bg-[#000000] text-white px-12 py-4 rounded-full text-sm font-bold tracking-[0.2em] uppercase hover:opacity-90 transition-all shadow-xl">
                             Explore our Collection
                         </button>

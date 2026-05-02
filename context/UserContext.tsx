@@ -48,6 +48,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     localStorage.removeItem('userId');
     localStorage.removeItem('user');
+    localStorage.removeItem('cartId');
     setUserId(null);
     setUser(null);
     window.location.href = '/';
