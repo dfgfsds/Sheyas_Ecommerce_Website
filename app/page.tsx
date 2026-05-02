@@ -3,12 +3,32 @@
 import EleganceSection from "@/components/EleganceSection";
 import Banner from "@/components/Banner";
 import ProductCard, { Product } from "@/components/ProductCard";
+import CategoryCard from "@/components/CategoryCard";
 import StorySection from "@/components/StorySection";
+import AboutSection from "@/components/AboutSection";
 import { motion } from "framer-motion";
 import { useProducts } from "@/context/ProductsContext";
+import { useCategories } from "@/context/CategoriesContext";
+import Link from "next/link";
 
 export default function Home() {
   const { products: apiProducts, isLoading } = useProducts();
+  const { categories: apiCategories, isLoading: isCategoriesLoading } = useCategories();
+
+  const categoriesArray = apiCategories?.data || apiCategories || [];
+  const displayCategories = categoriesArray?.length > 0 ? categoriesArray.map((c: any) => {
+    let imageUrl = c.image || "/placeholder-image.jpg";
+    if (imageUrl.includes("http://ip/")) {
+      imageUrl = imageUrl.replace("http://ip/", "http://82.29.161.36/");
+    }
+    return {
+      id: c.id,
+      name: c.name || "Unnamed Category",
+      slug: c.slug || c.name?.toLowerCase().replace(/\s+/g, '-'),
+      image: imageUrl,
+    };
+  }) : [];
+  const featuredCategories = displayCategories.slice(0, 4);
 
   const displayProducts = apiProducts?.length > 0 ? apiProducts.map((p: any) => {
     let imageUrl = (p.image_urls && p.image_urls[0]) || p.product_image || "/placeholder-image.jpg";
@@ -45,8 +65,9 @@ export default function Home() {
 
       <Banner />
 
-      {/* Featured Collection Section */}
-      {featuredProducts.length > 0 && (
+
+      {/* Categories Section */}
+      {featuredCategories.length > 0 && (
         <section className="max-w-[1440px] mx-auto px-4 sm:px-12 py-12 sm:py-16">
           <motion.div
             className="flex items-center justify-between mb-8 sm:mb-10"
@@ -54,8 +75,52 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-xl sm:text-3xl font-serif text-[#000000] italic">Eid Collection Highlights</h2>
-            <a href="/eid-collection" className="text-xs sm:text-base text-[#000000] border-b border-[#000000] pb-1 hover:opacity-70 transition-all italic whitespace-nowrap">
+            <h2 className="text-xl sm:text-3xl font-serif text-[#000000] italic">Shop by Category</h2>
+            <Link href="/categories" className="px-6 sm:px-8 py-3 sm:py-4 bg-black text-white rounded-full text-[10px] sm:text-xs font-bold shadow-xl hover:opacity-90 transition-all flex items-center justify-center uppercase tracking-widest whitespace-nowrap">
+              View All
+            </Link>
+          </motion.div>
+
+          <motion.div
+            className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ margin: "-100px" }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: { staggerChildren: 0.1 }
+              }
+            }}
+          >
+            {featuredCategories.map((category: any) => (
+              <motion.div
+                key={category.id}
+                variants={{
+                  hidden: { opacity: 0, y: 30 },
+                  visible: { opacity: 1, y: 0 }
+                }}
+                transition={{ duration: 0.5 }}
+              >
+                <CategoryCard category={category} />
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
+      )}
+
+      {/* Featured Collection Section */}
+      {featuredProducts.length > 0 && (
+        <section className="max-w-[1440px] mx-auto px-4 sm:px-12 pt-6 pb-12 sm:py-8 sm:pb-16">
+          <motion.div
+            className="flex items-center justify-between mb-8 sm:mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-xl sm:text-3xl font-serif text-[#000000] italic">Explore Our Collections</h2>
+            <a href="/products" className="px-6 sm:px-8 py-3 sm:py-4 bg-black text-white rounded-full text-[10px] sm:text-xs font-bold shadow-xl hover:opacity-90 transition-all flex items-center justify-center uppercase tracking-widest whitespace-nowrap">
               View All
             </a>
           </motion.div>
@@ -92,18 +157,20 @@ export default function Home() {
 
       {/* Story Sections */}
       <StorySection
+        title="About Us"
+        description="At Sheyas, we believe an abaya is more than just clothing - it's an expression of faith, grace, and individuality."
+        buttonText="Shop all"
+        buttonLink="/products"
+        imageSrc="/about_us.png"
+        imageLeft={true}
+      />
+
+      <AboutSection
         title="Exquisite Craftsmanship"
         description="Each abaya is thoughtfully designed to enhance your grace and confidence."
         buttonText="Contact Us"
+        buttonLink="/contact"
         imageSrc="/craftsmanship.png"
-      />
-
-      <StorySection
-        title="About Us"
-        description="At Sheyas, we believe an abaya is more than just clothing – it's an expression of faith, grace, and individuality."
-        buttonText="Shop all"
-        imageSrc="/about_us.png"
-        imageLeft={true}
       />
 
     </div>

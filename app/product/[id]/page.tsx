@@ -57,7 +57,7 @@ export default function ProductDetailPage() {
 
         if (!userId) {
             showToast("Please login to add items to your cart", "warning");
-            router.push("/login");
+            router.push(`/login?redirect=/product/${id}`);
             return;
         }
 
@@ -222,7 +222,7 @@ export default function ProductDetailPage() {
                     </div>
 
                     {/* Lifestyle/Video Placeholder */}
-                    <div className="relative aspect-video rounded-[2rem] overflow-hidden mt-8 group cursor-pointer">
+                    {/* <div className="relative aspect-video rounded-[2rem] overflow-hidden mt-8 group cursor-pointer">
                         {mainImage && (
                             <Image
                                 src={mainImage}
@@ -237,7 +237,7 @@ export default function ProductDetailPage() {
                                 <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[18px] border-l-[#000000] border-b-[10px] border-b-transparent ml-1"></div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Right Column - Product Info */}
@@ -291,7 +291,9 @@ export default function ProductDetailPage() {
                                 return isProductMatch && isVariantMatch;
                             });
 
-                            if (cartEntry) {
+                            const isUserLoggedIn = !!user || (typeof window !== 'undefined' && !!localStorage.getItem("userId"));
+
+                            if (cartEntry && isUserLoggedIn) {
                                 return (
                                     <div className="flex items-center gap-3 w-full sm:w-[90%]">
                                         <div className="flex-1 flex items-center justify-between border-2 border-[#000000] bg-[#000000] text-white rounded-full px-6 py-4">

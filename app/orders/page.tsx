@@ -209,7 +209,7 @@ export default function OrdersPage() {
                                 It looks like you haven&apos;t placed any orders yet. Explore our latest collections to find something you love.
                             </p>
                             <Link
-                                href="/eid-collection"
+                                href="/products"
                                 className="inline-flex items-center justify-center px-10 py-4 bg-black text-white rounded-full text-sm font-bold hover:opacity-90 transition-all uppercase tracking-widest"
                             >
                                 Start Shopping

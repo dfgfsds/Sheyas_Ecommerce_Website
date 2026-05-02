@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/context/ToastContext";
 import { useUser } from "@/context/UserContext";
 import { useProducts } from "@/context/ProductsContext";
+import { useCartItem } from "@/context/CartItemContext";
 import { formatPrice } from "@/utils/price-utils";
 
 export default function Header() {
@@ -16,6 +17,7 @@ export default function Header() {
     const { showToast } = useToast();
     const { user, isAuthenticated } = useUser();
     const { products: apiData } = useProducts();
+    const { cartItem } = useCartItem();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
@@ -64,8 +66,8 @@ export default function Header() {
 
     const navItems = [
         { name: "Home", path: "/" },
-        { name: "Eid Collection", path: "/eid-collection" },
-        { name: "Abaya", path: "/abaya" },
+        { name: "Categories", path: "/categories" },
+        { name: "Products", path: "/products" },
         { name: "Contact Us", path: "/contact" },
         { name: "About Us", path: "/about" },
         { name: "Order Status", path: "/orders", protected: true },
@@ -90,28 +92,28 @@ export default function Header() {
             {/* Top Bar */}
             <div className="text-white text-center text-[10px] sm:text-[16px] py-2.5 tracking-[0.25em] font-bold italic 
             bg-[#000000]
-            shadow-inner border-b border-white/5 relative overflow-hidden z-[110]">
+            shadow-inner border-b border-white/5 relative overflow-hidden z-[90]">
                 <div className="absolute inset-0 pointer-events-none"></div>
                 <span className="relative z-10">Unlock Exclusive Offers at Checkout</span>
             </div>
 
             {/* Main Header - Sticky */}
-            <header className="w-full sticky top-0 z-[100] bg-white shadow-xs">
+            <header className="w-full sticky top-0 z-[120] bg-white shadow-xs">
                 {/* Mobile Menu Overlay */}
                 {isMenuOpen && (
-                    <div className="fixed inset-0 z-[110] bg-[#000000]/40 backdrop-blur-sm lg:hidden" onClick={() => setIsMenuOpen(false)}>
+                    <div className="fixed inset-0 z-[999] bg-[#000000]/40 backdrop-blur-sm lg:hidden" onClick={() => setIsMenuOpen(false)}>
                         <div
                             className="absolute left-0 top-0 bottom-0 w-[80%] max-w-[300px] bg-white shadow-2xl p-8 flex flex-col animate-in slide-in-from-left duration-300"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="flex items-center justify-between mb-12">
-                                <h2 className="text-2xl font-bold italic text-[#000000]">Menu</h2>
+                            <div className="flex items-center justify-between mb-8">
+                                <h2 className="text-2xl font-bold italic text-[#000000]">Sheyas</h2>
                                 <button onClick={() => setIsMenuOpen(false)} className="text-[#000000]">
                                     <X className="w-7 h-7 stroke-[1.5px]" />
                                 </button>
                             </div>
 
-                            <nav className="flex flex-col gap-8">
+                            <nav className="flex flex-col gap-6">
                                 {navItems.map((item) => (
                                     <Link
                                         key={item.path}
@@ -129,8 +131,15 @@ export default function Header() {
                                 <Link href={isLoggedIn ? "/profile" : "/login"} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[#000000] font-bold italic">
                                     <User className="w-5 h-5" /> Account
                                 </Link>
-                                <Link href="/cart" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-[#000000] font-bold italic">
-                                    <ShoppingBag className="w-5 h-5" /> Cart
+                                <Link href="/cart" onClick={() => setIsMenuOpen(false)} className="flex items-center justify-between text-[#000000] font-bold italic">
+                                    <div className="flex items-center gap-3">
+                                        <ShoppingBag className="w-5 h-5" /> Cart
+                                    </div>
+                                    {isLoggedIn && cartItem?.length > 0 && (
+                                        <span className="bg-black text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                                            {cartItem.length}
+                                        </span>
+                                    )}
                                 </Link>
                             </div>
                         </div>
@@ -190,8 +199,13 @@ export default function Header() {
                             <Link href={isLoggedIn ? "/profile" : "/login"} aria-label="Account" className="block hover:opacity-70 transition-opacity">
                                 <User className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
                             </Link>
-                            <Link href="/cart" aria-label="Cart" className="hover:opacity-70 transition-opacity">
+                            <Link href="/cart" aria-label="Cart" className="hover:opacity-70 transition-opacity relative group">
                                 <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
+                                {isLoggedIn && cartItem?.length > 0 && (
+                                    <span className="absolute -top-2 -right-2 bg-black text-white text-[8px] sm:text-[10px] w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center font-bold animate-in zoom-in duration-300 shadow-sm border border-white">
+                                        {cartItem.length}
+                                    </span>
+                                )}
                             </Link>
                         </div>
                     </div>
@@ -258,7 +272,7 @@ export default function Header() {
                                                 </Link>
                                             ))}
                                             <Link
-                                                href="/eid-collection"
+                                                href="/products"
                                                 onClick={() => {
                                                     setIsSearchOpen(false);
                                                     setSearchQuery("");
