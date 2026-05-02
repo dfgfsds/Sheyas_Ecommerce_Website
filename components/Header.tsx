@@ -55,6 +55,7 @@ export default function Header() {
     }, []);
 
     const isLoggedIn = mounted ? isAuthenticated : false;
+    const totalCartQuantity = cartItem?.reduce((total: number, item: any) => total + (item.quantity || 1), 0) || 0;
 
     const products = apiData || [];
     const filteredProducts = searchQuery.trim().length > 1
@@ -135,9 +136,9 @@ export default function Header() {
                                     <div className="flex items-center gap-3">
                                         <ShoppingBag className="w-5 h-5" /> Cart
                                     </div>
-                                    {isLoggedIn && cartItem?.length > 0 && (
+                                    {isLoggedIn && totalCartQuantity > 0 && (
                                         <span className="bg-black text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">
-                                            {cartItem.length}
+                                            {totalCartQuantity}
                                         </span>
                                     )}
                                 </Link>
@@ -201,9 +202,9 @@ export default function Header() {
                             </Link>
                             <Link href="/cart" aria-label="Cart" className="hover:opacity-70 transition-opacity relative group">
                                 <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.5px]" />
-                                {isLoggedIn && cartItem?.length > 0 && (
+                                {isLoggedIn && totalCartQuantity > 0 && (
                                     <span className="absolute -top-2 -right-2 bg-black text-white text-[8px] sm:text-[10px] w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center font-bold animate-in zoom-in duration-300 shadow-sm border border-white">
-                                        {cartItem.length}
+                                        {totalCartQuantity}
                                     </span>
                                 )}
                             </Link>
