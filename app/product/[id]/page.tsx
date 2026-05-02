@@ -170,6 +170,7 @@ export default function ProductDetailPage() {
         newPrice: `₹${productData.price}`,
         reviews: productData.reviews || 0,
         description: productData.description || "No description available.",
+        categoryName: productData.category_name || productData.category?.name || "",
         onSale: productData.discount ? parseFloat(productData.discount) > parseFloat(productData.price) : false,
     };
 
@@ -195,11 +196,6 @@ export default function ProductDetailPage() {
                                 priority
                                 onError={() => setMainImage("/placeholder-image.jpg")}
                             />
-                        )}
-                        {product.onSale && (
-                            <div className="absolute top-6 left-6 bg-white px-6 py-2 rounded-full shadow-lg text-sm font-bold italic z-10">
-                                Sale
-                            </div>
                         )}
                     </div>
 
@@ -242,13 +238,14 @@ export default function ProductDetailPage() {
 
                 {/* Right Column - Product Info */}
                 <div className="flex flex-col pt-4">
-                    <span className="text-sm tracking-[0.2em] opacity-60 uppercase font-medium mb-2">Sheyas</span>
+                    {product.categoryName && (
+                        <span className="text-sm tracking-[0.2em] opacity-60 uppercase font-medium mb-2">{product.categoryName}</span>
+                    )}
                     <h1 className="text-4xl sm:text-5xl  font-bold mb-6  tracking-wide">{product.name}</h1>
 
                     <div className="flex items-center gap-4 mb-6">
-                        <span className="text-lg opacity-40 line-through italic">{product.oldPrice}</span>
                         <span className="text-3xl font-bold ">{product.newPrice}</span>
-                        <span className="bg-[#000000] text-white text-xs px-3 py-1 rounded-full italic font-medium uppercase tracking-wider">Sale</span>
+                        <span className="text-xl opacity-40 line-through">{product.oldPrice}</span>
                     </div>
 
                     {/* Size Selection */}

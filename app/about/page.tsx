@@ -21,38 +21,38 @@ export default function AboutPage() {
     };
 
     return (
-        <main className="min-h-screen text-[#000000] py-12 sm:py-20 px-6 sm:px-12 bg-white flex flex-col items-center overflow-hidden">
+        <main className="text-[#000000] py-16 sm:py-20 px-6 sm:px-12 bg-white flex flex-col items-center overflow-hidden">
 
             <motion.div
-                className="max-w-[800px] w-full text-center space-y-10 sm:space-y-12"
+                className="max-w-[800px] w-full text-center"
                 initial="hidden"
                 animate="visible"
                 variants={staggerContainer}
             >
                 {/* Header */}
                 <motion.h1
-                    className="text-3xl sm:text-5xl italic font-serif opacity-90"
+                    className="text-3xl sm:text-5xl italic font-serif opacity-90 mb-6 md:mb-8"
                     variants={fadeInUp}
                 >
                     About Us
                 </motion.h1>
 
                 {/* Content Sections */}
-                <motion.div className="space-y-8 sm:space-y-10" variants={fadeInUp}>
+                <motion.div className="space-y-0" variants={fadeInUp}>
                     <motion.p
-                        className="text-base sm:text-xl italic leading-relaxed opacity-80"
+                        className="text-base sm:text-xl italic leading-relaxed mb-7 md:mb-6"
                         variants={fadeInUp}
                     >
-                        At <span className="font-bold not-italic">Sheyas</span>, we believe an abaya is more than just clothing – it’s an expression of faith, grace, and individuality.
+                        At <span className="font-bold not-italic">Sheyas</span>, we believe an abaya is more than just clothing - it’s an expression of faith, grace, and individuality.
                     </motion.p>
 
-                    <motion.p className="text-base sm:text-lg opacity-80" variants={fadeInUp}>
+                    <motion.p className="text-base sm:text-lg mb-4 md:mb-5" variants={fadeInUp}>
                         We specialize in:
                     </motion.p>
 
                     {/* Specialty List */}
-                    <motion.div className="flex justify-center" variants={fadeInUp}>
-                        <ul className="space-y-3 sm:space-y-4 text-left">
+                    <motion.div className="flex justify-center mb-7 md:mb-10" variants={fadeInUp}>
+                        <ul className="space-y-3 text-left">
                             {[
                                 { title: "Premium Fabrics", desc: "breathable, long-lasting, and luxurious." },
                                 { title: "Modern Designs", desc: "modest yet stylish cuts that suit all occasions." },
@@ -73,7 +73,7 @@ export default function AboutPage() {
                     </motion.div>
 
                     <motion.p
-                        className="text-base sm:text-xl italic leading-relaxed opacity-80 pt-2 sm:pt-4"
+                        className="text-base sm:text-xl italic leading-relaxed mb-10"
                         variants={fadeInUp}
                     >
                         Whether you’re looking for a <span className="font-bold not-italic">classic black abaya</span>, an <span className="font-bold not-italic">embroidered masterpiece</span>, or a <span className="font-bold not-italic">custom design</span>, we ensure you feel both confident and comfortable.
@@ -81,7 +81,7 @@ export default function AboutPage() {
                 </motion.div>
 
                 {/* CTA Button */}
-                <motion.div className="pt-6 sm:pt-8" variants={fadeInUp}>
+                <motion.div className="pt-0" variants={fadeInUp}>
                     <Link href="/products">
                         <motion.button
                             className="bg-[#000000] text-white px-10 sm:px-12 py-3 sm:py-3.5 rounded-full text-base sm:text-lg font-bold italic hover:opacity-90 transition-all shadow-lg tracking-wide w-full sm:w-auto"
