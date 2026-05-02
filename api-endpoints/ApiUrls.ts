@@ -1,5 +1,5 @@
 export const baseUrl = 'https://ecomapi.ftdigitalsolutions.org';
-//export const baseUrl = 'https://test-ecomapi.justvy.in';
+// export const baseUrl = 'https://test-ecomapi.justvy.in';
 // export const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://ecomapi.ftdigitalsolutions.org';
 // export const baseUrlTest = process.env.NEXT_PUBLIC_API_BASE_URL_TEST || 'https://test-ecomapi.justvy.in';
 
