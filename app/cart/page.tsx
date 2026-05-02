@@ -40,8 +40,7 @@ export default function CartPage() {
     const queryClient = useQueryClient();
 
     // Synchronous check to prevent flashing/redirection during hydration
-    const hasToken = typeof window !== 'undefined' ? !!localStorage.getItem('userId') : true;
-    if (!hasToken) return null;
+    const hasToken = typeof window !== 'undefined' ? !!localStorage.getItem('userId') : false;
 
     const cartId = typeof window !== 'undefined' ? localStorage.getItem('cartId') : null;
     const [isUpdating, setIsUpdating] = useState<number | null>(null);
@@ -312,19 +311,19 @@ export default function CartPage() {
         );
     }
 
-    if (!user && !isUserLoading) {
+    if (!hasToken || (!user && !isUserLoading)) {
         return (
             <main className="max-w-[1440px] mx-auto px-6 sm:px-12 py-14 text-center">
                 <div className="max-w-md mx-auto bg-gray-50 rounded-[3rem] p-12 border border-dashed border-gray-200">
                     <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-3.5 shadow-sm">
                         <User className="w-10 h-10 text-gray-500" />
                     </div>
-                    <h2 className="text-2xl font-serif italic mb-3">Your cart is waiting</h2>
+                    <h2 className="text-2xl font-serif italic mb-2">Your cart is waiting</h2>
                     <p className="text-gray-500 mb-6 italic leading-relaxed">
                         Please log in to view your saved items, add new products, and complete your purchase.
                     </p>
                     <Link
-                        href="/login"
+                        href="/login?redirect=/cart"
                         className="inline-flex items-center justify-center px-12 py-4 bg-black text-white rounded-full text-sm font-bold hover:opacity-90 transition-all uppercase tracking-widest shadow-lg"
                     >
                         Login to continue
@@ -574,14 +573,14 @@ export default function CartPage() {
                     </div>
                 </div>
             ) : (
-                <div className="py-32 text-center space-y-8 bg-gray-50 rounded-[3rem] border border-dashed border-gray-200">
-                    <div className="space-y-3">
-                        <p className="text-2xl font-serif italic text-gray-400">Your cart is currently empty.</p>
-                        <p className="text-sm text-gray-400">Find something you love in our collection.</p>
+                <div className="py-20 text-center space-y-[22px] bg-gray-50 rounded-[3rem] border border-dashed border-gray-200">
+                    <div className="space-y-2">
+                        <p className="text-2xl font-serif italic text-black">Your cart is currently empty.</p>
+                        <p className="text-sm text-gray-500">Find something you love in our collection.</p>
                     </div>
                     <Link href="/eid-collection">
                         <button className="bg-[#000000] text-white px-12 py-4 rounded-full text-sm font-bold tracking-[0.2em] uppercase hover:opacity-90 transition-all shadow-xl">
-                            Shop Our Collection
+                            Explore our Collection
                         </button>
                     </Link>
                 </div>
