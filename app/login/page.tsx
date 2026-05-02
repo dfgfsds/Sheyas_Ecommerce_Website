@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Phone, Mail, ArrowRight, Lock, Eye, EyeOff } from "lucide-react";
 import { postSignInAPi, postSendSmsOtpUserApi, postVerifySmsOtpApi } from "@/api-endpoints/authendication";
 import { getCartApi } from "@/api-endpoints/CartsApi";
@@ -13,6 +13,16 @@ import { safeErrorLog } from "@/utils/error-handler";
 import { handleApiError } from "@/utils/error-utils";
 
 export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#f9f8f4]">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+        </div>}>
+            <LoginContent />
+        </Suspense>
+    );
+}
+
+function LoginContent() {
     const [loginMethod, setLoginMethod] = useState<"phone" | "email">("phone");
     const [inputValue, setInputValue] = useState("");
     const [password, setPassword] = useState("");
@@ -25,9 +35,12 @@ export default function LoginPage() {
     const otpInputRef = useRef<HTMLInputElement>(null);
 
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { setUser } = useUser();
     const { vendorId } = useVendor();
     const { showToast } = useToast();
+
+    const redirectPath = searchParams.get("redirect") || "/";
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -108,12 +121,12 @@ export default function LoginPage() {
 
                         showToast("Login successful!", "success");
                         setTimeout(() => {
-                            window.location.href = "/";
+                            window.location.href = redirectPath;
                         }, 500);
                     } else {
                         showToast("Login successful but missing user data.", "warning");
                         setTimeout(() => {
-                            window.location.href = "/";
+                            window.location.href = redirectPath;
                         }, 500);
                     }
                 } catch (error: any) {
@@ -156,12 +169,12 @@ export default function LoginPage() {
 
                     showToast("Login successful!", "success");
                     setTimeout(() => {
-                        window.location.href = "/";
+                        window.location.href = redirectPath;
                     }, 500);
                 } else {
                     showToast("Login successful but missing user data.", "warning");
                     setTimeout(() => {
-                        window.location.href = "/";
+                        window.location.href = redirectPath;
                     }, 500);
                 }
             } catch (error: any) {
