@@ -6,7 +6,7 @@ import { FaFacebookF, FaInstagram, FaEnvelope, FaPhoneAlt, FaMapMarkerAlt } from
 
 export default function Footer() {
     return (
-        <footer className="bg-[#060303] text-[#e7dcd4] px-10 py-16">
+        <footer className="bg-[#060303] text-[#e7dcd4] px-10 pt-16 pb-12">
 
             {/* Top Section - Grid Layout */}
             <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 items-start">
@@ -30,11 +30,11 @@ export default function Footer() {
                 <div className="flex flex-col items-start lg:items-center gap-5">
                     <div className="flex flex-col items-start gap-5">
                         <h3 className="text-lg font-semibold text-left tracking-widest uppercase mb-1">Policies</h3>
-                        <div className="flex flex-col items-start gap-3 text-sm tracking-wide opacity-80">
-                            <Link href="/privacy-policy" className="hover:underline hover:opacity-100 transition-opacity">Privacy Policy</Link>
-                            <Link href="/return-policy" className="hover:underline hover:opacity-100 transition-opacity">Return Policy</Link>
-                            <Link href="/shipping-policy" className="hover:underline hover:opacity-100 transition-opacity">Shipping Policy</Link>
-                            <Link href="/terms-of-service" className="hover:underline hover:opacity-100 transition-opacity">Terms of Service</Link>
+                        <div className="flex flex-col items-start gap-3 text-sm tracking-wide">
+                            <Link href="/privacy-policy" className="text-[#e7dcd4]/80 hover:text-white transition-colors hover:opacity-100 transition-opacity">Privacy Policy</Link>
+                            <Link href="/return-policy" className="text-[#e7dcd4]/80 hover:text-white transition-colors hover:opacity-100 transition-opacity">Return Policy</Link>
+                            <Link href="/shipping-policy" className="text-[#e7dcd4]/80 hover:text-white transition-colors hover:opacity-100 transition-opacity">Shipping Policy</Link>
+                            <Link href="/terms-of-service" className="text-[#e7dcd4]/80 hover:text-white transition-colors hover:opacity-100 transition-opacity">Terms of Service</Link>
                         </div>
                     </div>
                 </div>
@@ -51,14 +51,19 @@ export default function Footer() {
                             <FaPhoneAlt className="text-base shrink-0" />
                             <span>+91 9385956032</span>
                         </a>
-                        <div className="flex items-start gap-3 text-left">
+                        <a
+                            href="https://www.google.com/maps/search/?api=1&query=Fine+Center+30%2F2A+East+St+Anna+Nagar+Madurai+Tamil+Nadu+625020"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-start gap-3 text-left hover:text-white transition-colors"
+                        >
                             <FaMapMarkerAlt className="text-lg shrink-0 mt-1" />
                             <span className="leading-relaxed">
                                 Fine Center, 30/2A, East St,<br />
                                 Anna Nagar, Madurai,<br />
                                 Tamil Nadu 625020
                             </span>
-                        </div>
+                        </a>
                     </div>
                 </div>
 
