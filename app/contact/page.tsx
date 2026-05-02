@@ -39,9 +39,9 @@ export default function ContactPage() {
 
         setLoading(true);
         try {
-            await axios.post(ApiUrls?.sendQuoteRequest, { 
-                ...form, 
-                vendor_id: vendorId 
+            await axios.post(ApiUrls?.sendQuoteRequest, {
+                ...form,
+                vendor_id: vendorId
             });
             showToast("Message sent successfully!", "success");
             setForm({ name: "", email: "", contact_number: "", description: "" });
@@ -68,12 +68,13 @@ export default function ContactPage() {
                             placeholder="Name"
                             value={form.name}
                             onChange={handleChange}
+                            required
                             className="w-full bg-white border border-[#000000]/30 rounded-md py-3 sm:py-3.5 px-6 italic focus:outline-none focus:border-[#6b4a3a] text-sm sm:text-base"
                         />
                         <input
                             type="email"
                             name="email"
-                            placeholder="Email *"
+                            placeholder="Email"
                             value={form.email}
                             onChange={handleChange}
                             className="w-full bg-white border border-[#000000]/30 rounded-md py-3 sm:py-3.5 px-6 italic focus:outline-none focus:border-[#6b4a3a] text-sm sm:text-base"
@@ -87,6 +88,7 @@ export default function ContactPage() {
                         value={form.contact_number}
                         onChange={handleChange}
                         maxLength={10}
+                        required
                         className="w-full bg-white border border-[#000000]/30 rounded-md py-3 sm:py-3.5 px-6 italic focus:outline-none focus:border-[#000000] text-sm sm:text-base"
                     />
                     <textarea
@@ -99,7 +101,7 @@ export default function ContactPage() {
                     ></textarea>
 
                     <div className="flex justify-center sm:justify-start">
-                        <button 
+                        <button
                             type="submit"
                             disabled={loading}
                             className="bg-[#000000] text-white px-12 py-3 sm:py-3.5 rounded-full text-base font-bold italic hover:opacity-90 transition-all shadow-md w-full sm:w-auto flex items-center justify-center gap-2"
