@@ -17,6 +17,7 @@ import { safeErrorLog } from "@/utils/error-handler";
 import { handleApiError } from "@/utils/error-utils";
 
 export default function ProductDetailPage() {
+    const [isZoomVisible, setIsZoomVisible] = useState(false);
     const { id } = useParams();
     const router = useRouter();
     const { products: allProducts } = useProducts();
@@ -39,6 +40,7 @@ export default function ProductDetailPage() {
 
     const [selectedSize, setSelectedSize] = useState("");
     const [mainImage, setMainImage] = useState("");
+    const [isImageHovered, setIsImageHovered] = useState(false);
 
     // Update main image and selected size when data arrives
     React.useEffect(() => {
@@ -182,19 +184,49 @@ export default function ProductDetailPage() {
 
     return (
         <main className="max-w-[1440px] mx-auto px-6 sm:px-12 pt-14 pb-12 text-[#000000]">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:mb-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:mb-10 overflow-visible">
 
                 {/* Left Column - Gallery */}
                 <div className="space-y-6">
-                    <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden shadow-xl bg-gray-50">
-                        {mainImage && (
-                            <Image
+                    <div className="relative flex gap-6">
+
+                        {/* Main Image */}
+                        <div
+                            className="relative w-full overflow-hidden rounded-[2rem] shadow-xl"
+                            onMouseEnter={() => setIsZoomVisible(true)}
+                            onMouseLeave={() => setIsZoomVisible(false)}
+                            onMouseMove={(e) => {
+                                const { left, top, width, height } =
+                                    e.currentTarget.getBoundingClientRect();
+
+                                const x = ((e.clientX - left) / width) * 100;
+                                const y = ((e.clientY - top) / height) * 100;
+
+                                const zoomImage = document.getElementById("zoom-image");
+
+                                if (zoomImage) {
+                                    zoomImage.style.backgroundPosition = `${x}% ${y}%`;
+                                }
+                            }}
+                        >
+                            <img
                                 src={mainImage}
                                 alt={product.name}
-                                fill
-                                className="object-cover"
-                                priority
-                                onError={() => setMainImage("/placeholder-image.jpg")}
+                                className="w-full h-auto object-cover rounded-[2rem]"
+                            />
+                        </div>
+
+                        {/* Zoom Preview */}
+                        {isZoomVisible && (
+                            <div
+                                id="zoom-image"
+                                className="hidden lg:block absolute left-[105%] top-0 w-[100%] h-full rounded-[2rem] border border-gray-200 shadow-2xl bg-no-repeat z-[9999]"
+                                style={{
+                                    backgroundImage: `url(${mainImage})`,
+                                    backgroundSize: "250%",
+                                    backgroundRepeat: "no-repeat",
+                                    backgroundColor: "#fff",
+                                }}
                             />
                         )}
                     </div>
@@ -373,7 +405,7 @@ export default function ProductDetailPage() {
             <div className="py-4 md:py-7 lg:py-10">
                 <h2 className="text-3xl font-serif mb-10 italic">You may also like</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                    {allProducts && allProducts.length > 0 && allProducts.slice(0, 4).map((p: any) => (
+                    {allProducts && allProducts.length > 0 && allProducts.slice(0, 8).map((p: any) => (
                         <ProductCard
                             key={p.id}
                             product={{

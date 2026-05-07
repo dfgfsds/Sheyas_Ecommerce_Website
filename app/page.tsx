@@ -119,7 +119,7 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-xl sm:text-3xl font-serif text-[#000000] italic">Explore Our Collections</h2>
+            <h2 className="text-xl sm:text-3xl font-serif text-[#000000] italic">Explore Our Best Sellers</h2>
             <a href="/products" className="px-6 sm:px-8 py-3 sm:py-4 bg-black text-white rounded-full text-[10px] sm:text-xs font-bold shadow-xl hover:opacity-90 transition-all flex items-center justify-center uppercase tracking-widest whitespace-nowrap">
               View All
             </a>

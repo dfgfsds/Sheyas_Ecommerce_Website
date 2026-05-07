@@ -24,6 +24,14 @@ export default function Footer() {
                     <p className="text-sm text-[#e7dcd4]/70 text-left leading-relaxed">
                         Elevating modest fashion with premium Abayas and exclusive Eid collections.
                     </p>
+                    <a href="mailto:sheyas.co@gmail.com" className="hover:text-white transition-colors flex items-center gap-3">
+                        <FaEnvelope className="text-base shrink-0" />
+                        <span>sheyas.co@gmail.com</span>
+                    </a>
+                    <a href="tel:9385956032" className="hover:text-white transition-colors flex items-center gap-3">
+                        <FaPhoneAlt className="text-base shrink-0" />
+                        <span>+91 9385956032</span>
+                    </a>
                 </div>
 
                 {/* Center 1 - Quick Links */}
@@ -42,15 +50,9 @@ export default function Footer() {
                 {/* Center 2 - Contact Info */}
                 <div className="flex flex-col items-start gap-5">
                     <h3 className="text-lg font-semibold text-left tracking-widest uppercase mb-1">Contact Us</h3>
+                    {/* branch one */}
                     <div className="flex flex-col items-start gap-4 text-sm text-[#e7dcd4]/80">
-                        <a href="mailto:sheyas.co@gmail.com" className="hover:text-white transition-colors flex items-center gap-3">
-                            <FaEnvelope className="text-base shrink-0" />
-                            <span>sheyas.co@gmail.com</span>
-                        </a>
-                        <a href="tel:9385956032" className="hover:text-white transition-colors flex items-center gap-3">
-                            <FaPhoneAlt className="text-base shrink-0" />
-                            <span>+91 9385956032</span>
-                        </a>
+
                         <a
                             href="https://www.google.com/maps/search/?api=1&query=Fine+Center+30%2F2A+East+St+Anna+Nagar+Madurai+Tamil+Nadu+625020"
                             target="_blank"
@@ -62,6 +64,19 @@ export default function Footer() {
                                 Fine Center, 30/2A, East St,<br />
                                 Anna Nagar, Madurai,<br />
                                 Tamil Nadu 625020
+                            </span>
+                        </a>
+                        <a
+                            href="https://www.google.com/maps/search/?api=1&query=AFIYA+COLLECTION+1170%2FA%2F2+Govt+girls+hr+sec+school+op+Manamelkudi+614620"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-start gap-3 text-left hover:text-white transition-colors"
+                        >
+                            <FaMapMarkerAlt className="text-lg shrink-0 mt-1" />
+                            <span className="leading-relaxed">
+                                AFIYA COLLECTION,<br />
+                                1170/A/2, Govt girls hr sec school(op),<br />
+                                Manamelkudi - 614620
                             </span>
                         </a>
                     </div>
