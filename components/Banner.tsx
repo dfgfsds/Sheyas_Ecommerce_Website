@@ -24,6 +24,8 @@ export default function Banner() {
                 />
             </motion.div>
 
+
+
             {/* Subtle Overlay to enhance visual depth */}
             <div className="absolute inset-0 bg-black/5"></div>
 
