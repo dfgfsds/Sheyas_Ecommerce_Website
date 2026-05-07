@@ -41,6 +41,7 @@ export default function ProductDetailPage() {
     const [selectedSize, setSelectedSize] = useState("");
     const [mainImage, setMainImage] = useState("");
     const [isImageHovered, setIsImageHovered] = useState(false);
+    const [zoomBackgroundPosition, setZoomBackgroundPosition] = useState("50% 50%");
 
     // Update main image and selected size when data arrives
     React.useEffect(() => {
@@ -202,11 +203,7 @@ export default function ProductDetailPage() {
                                 const x = ((e.clientX - left) / width) * 100;
                                 const y = ((e.clientY - top) / height) * 100;
 
-                                const zoomImage = document.getElementById("zoom-image");
-
-                                if (zoomImage) {
-                                    zoomImage.style.backgroundPosition = `${x}% ${y}%`;
-                                }
+                                setZoomBackgroundPosition(`${x}% ${y}%`);
                             }}
                         >
                             <img
@@ -219,10 +216,10 @@ export default function ProductDetailPage() {
                         {/* Zoom Preview */}
                         {isZoomVisible && (
                             <div
-                                id="zoom-image"
-                                className="hidden lg:block absolute left-[105%] top-0 w-[100%] h-full rounded-[2rem] border border-gray-200 shadow-2xl bg-no-repeat z-[9999]"
+                                className="hidden lg:block absolute left-[105%] top-0 w-[480px] h-full rounded-[2rem] border border-gray-200 shadow-2xl bg-no-repeat z-[9999]"
                                 style={{
-                                    backgroundImage: `url(${mainImage})`,
+                                    backgroundImage: `url("${mainImage}")`,
+                                    backgroundPosition: zoomBackgroundPosition,
                                     backgroundSize: "250%",
                                     backgroundRepeat: "no-repeat",
                                     backgroundColor: "#fff",
