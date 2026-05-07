@@ -527,7 +527,7 @@ function ProfileContent() {
 
                 {/* Address Modal */}
                 {isAddressModalOpen && (
-                    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+                    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
                         <div className="bg-white rounded-[2rem] w-full max-w-2xl p-8 sm:p-10 shadow-2xl relative animate-in fade-in zoom-in duration-300 max-h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                             <button
                                 onClick={() => setIsAddressModalOpen(false)}
