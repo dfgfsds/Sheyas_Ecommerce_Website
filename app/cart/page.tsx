@@ -511,7 +511,7 @@ export default function CartPage() {
                         </div>
 
                         {/* Payment Method Selection */}
-                        <div className="bg-gray-50 p-6 sm:p-8 rounded-[2rem] border border-gray-100 space-y-4">
+                        {/* <div className="bg-gray-50 p-6 sm:p-8 rounded-[2rem] border border-gray-100 space-y-4">
                             <h2 className="text-xl font-serif italic">Payment Method</h2>
                             <div className="flex gap-4">
                                 {["Prepaid", "COD"].map((method) => (
@@ -524,6 +524,27 @@ export default function CartPage() {
                                             }`}
                                     >
                                         {method === "Prepaid" ? "Pay Online" : "Cash on Delivery"}
+                                    </button>
+                                ))}
+                            </div>
+                        </div> */}
+                        {/* Payment Method Selection */}
+                        <div className="bg-gray-50 p-6 sm:p-8 rounded-[2rem] border border-gray-100 space-y-4">
+                            <h2 className="text-xl font-serif italic">Payment Method</h2>
+
+                            <div className="flex flex-col gap-4">
+                                {["Prepaid", "COD"].map((method) => (
+                                    <button
+                                        key={method}
+                                        onClick={() => setPaymentMethod(method as any)}
+                                        className={`w-full py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${paymentMethod === method
+                                                ? "bg-black text-white shadow-lg scale-[1.02]"
+                                                : "bg-white text-black border border-gray-200 hover:border-black opacity-60"
+                                            }`}
+                                    >
+                                        {method === "Prepaid"
+                                            ? "Pay Online"
+                                            : "Cash on Delivery"}
                                     </button>
                                 ))}
                             </div>
