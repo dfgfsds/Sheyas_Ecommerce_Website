@@ -38,10 +38,65 @@ export default function ProductDetailPage() {
     const [isAddingToCart, setIsAddingToCart] = useState(false);
     const [isUpdatingCart, setIsUpdatingCart] = useState(false);
 
-    const [selectedSize, setSelectedSize] = useState("");
+    const [selectedSize, setSelectedSize] = useState<any>("");
     const [mainImage, setMainImage] = useState("");
     const [isImageHovered, setIsImageHovered] = useState(false);
     const [zoomBackgroundPosition, setZoomBackgroundPosition] = useState("50% 50%");
+    console.log(selectedSize)
+
+    const [selectedVariant, setSelectedVariant] = useState<any>(null);
+
+    React.useEffect(() => {
+        if (productData) {
+
+            const firstImage =
+                (productData.image_urls && productData.image_urls[0]) ||
+                productData.product_image ||
+                "/placeholder-image.jpg";
+
+            setMainImage(
+                firstImage.replace(
+                    "http://ip/",
+                    "http://82.29.161.36/"
+                )
+            );
+
+            // AUTO SELECT FIRST VARIANT
+            if (productData.variants?.length > 0) {
+
+                const firstVariant = productData.variants[0];
+
+                setSelectedVariant(firstVariant);
+
+                // AUTO SELECT FIRST SIZE
+                if (firstVariant?.sizes?.length > 0) {
+                    setSelectedSize(firstVariant.sizes[0]);
+                }
+            }
+        }
+    }, [productData]);
+    console.log(productData);
+
+    const currentVariant =
+        productData?.variants?.find(
+            (v: any) => v.id === selectedVariant?.id
+        );
+
+    const currentSize =
+        currentVariant?.sizes?.find(
+            (s: any) => s.id === selectedSize?.id
+        );
+
+    const finalPrice =
+        currentSize?.product_size_price ||
+        currentVariant?.product_variant_price ||
+        productData?.price;
+
+    const finalOldPrice =
+        currentSize?.product_size_discount ||
+        currentVariant?.product_variant_discount ||
+        productData?.discount;
+
 
     // Update main image and selected size when data arrives
     React.useEffect(() => {
@@ -64,7 +119,10 @@ export default function ProductDetailPage() {
             return;
         }
 
-        if (sizes.length > 0 && !selectedSize) {
+        if (
+            productData.variants?.length > 0 &&
+            !selectedVariant
+        ) {
             showToast("Please select a size before adding to cart", "warning");
             return;
         }
@@ -101,8 +159,13 @@ export default function ProductDetailPage() {
                 created_by: userId,
                 product: productData.id,
                 quantity: 1,
-                variant: selectedVariant?.id,
-                product_variant: selectedVariant?.id, // Added for backend compatibility
+                // variant: selectedVariant?.id,
+                // product_variant: selectedVariant?.id, // Added for backend compatibility
+                variant: selectedVariant?.id || null,
+                product_variant: selectedVariant?.id || null,
+
+                size: selectedSize?.id || null,
+                product_size: selectedSize?.id || null,
             };
 
             await postCartitemApi("", payload);
@@ -169,8 +232,15 @@ export default function ProductDetailPage() {
     const product = {
         id: productData.id,
         name: productData.name || productData.product_name || "Unnamed Product",
-        oldPrice: productData.discount ? `₹${productData.discount}` : `₹${productData.price}`,
-        newPrice: `₹${productData.price}`,
+        // oldPrice: productData.discount ? `₹${productData.discount}` : `₹${productData.price}`,
+        // newPrice: `₹${productData.price}`,
+        oldPrice:
+            finalOldPrice &&
+                Number(finalOldPrice) > Number(finalPrice)
+                ? `₹${finalOldPrice}`
+                : "",
+
+        newPrice: `₹${finalPrice}`,
         reviews: productData.reviews || 0,
         description: productData.description || "No description available.",
         categoryName: productData.category_name || productData.category?.name || "",
@@ -178,10 +248,10 @@ export default function ProductDetailPage() {
     };
 
     const images = productData.image_urls?.map((url: string) => url.replace("http://ip/", "http://82.29.161.36/")) || [mainImage];
-    const sizes = Array.from(new Set(
-        productData.variants?.flatMap((v: any) => v.sizes?.map((s: any) => s.product_size) || [])
-            .filter(Boolean) || []
-    ));
+    // const sizes = Array.from(new Set(
+    //     productData.variants?.flatMap((v: any) => v.sizes?.map((s: any) => s.product_size) || [])
+    //         .filter(Boolean) || []
+    // ));
 
     return (
         <main className="max-w-[1440px] mx-auto px-6 sm:px-12 pt-14 pb-12 text-[#000000]">
@@ -277,8 +347,162 @@ export default function ProductDetailPage() {
                         <span className="text-xl opacity-40 line-through">{product.oldPrice}</span>
                     </div>
 
+                    {/* Variant Selection */}
+                    {productData.variants?.length > 0 && (
+                        <div className="mb-10">
+
+                            <div className="flex items-center justify-between mb-5">
+                                <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
+                                    Select Variant
+                                </h3>
+
+                                {selectedVariant && (
+                                    <span className="text-sm font-medium text-black">
+                                        {selectedVariant.product_variant_title}
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+
+                                {productData.variants.map((variant: any) => {
+
+                                    const variantImage =
+                                        variant?.product_variant_image_urls?.[0] ||
+                                        "/placeholder-image.jpg";
+
+                                    const isSelected =
+                                        selectedVariant?.id === variant.id;
+
+                                    return (
+
+                                        <button
+                                            key={variant.id}
+                                            onClick={() => {
+
+                                                setSelectedVariant(variant);
+
+                                                // RESET SIZE
+                                                if (variant?.sizes?.length > 0) {
+                                                    setSelectedSize(variant.sizes[0]);
+                                                } else {
+                                                    setSelectedSize(null);
+                                                }
+                                            }}
+
+                                            className={`
+                            group relative overflow-hidden rounded-[1.5rem]
+                            border transition-all duration-300
+                            ${isSelected
+                                                    ? "border-black shadow-2xl scale-[1.02]"
+                                                    : "border-gray-200 hover:border-black hover:shadow-lg"
+                                                }
+                        `}
+                                        >
+
+                                            {/* Image */}
+                                            <div className="relative aspect-square overflow-hidden bg-gray-100">
+
+                                                <Image
+                                                    src={variantImage}
+                                                    fill
+                                                    alt={variant.product_variant_title}
+                                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                                />
+
+                                                {/* Overlay */}
+                                                <div
+                                                    className={`
+                                    absolute inset-0 transition-all
+                                    ${isSelected
+                                                            ? "bg-black/10"
+                                                            : "bg-black/0 group-hover:bg-black/5"
+                                                        }
+                                `}
+                                                />
+
+                                                {/* Selected Badge */}
+                                                {isSelected && (
+                                                    <div className="absolute top-3 right-3 bg-black text-white text-[10px] px-2 py-1 rounded-full tracking-wide">
+                                                        Selected
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Content */}
+                                            <div className="p-4 text-left">
+
+                                                <h4 className="text-sm font-semibold text-black line-clamp-1">
+                                                    {variant.product_variant_title ||
+                                                        variant.variant_name ||
+                                                        `Variant ${variant.id}`}
+                                                </h4>
+
+                                                <div className="mt-2 flex items-center gap-2">
+
+                                                    <span className="text-base font-bold text-black">
+                                                        ₹
+                                                        {variant.product_variant_price ||
+                                                            productData.price}
+                                                    </span>
+
+                                                    {variant.product_variant_discount &&
+                                                        Number(
+                                                            variant.product_variant_discount
+                                                        ) >
+                                                        Number(
+                                                            variant.product_variant_price
+                                                        ) && (
+                                                            <span className="text-xs text-gray-400 line-through">
+                                                                ₹
+                                                                {variant.product_variant_discount}
+                                                            </span>
+                                                        )}
+                                                </div>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+
                     {/* Size Selection */}
-                    <div className="mb-8">
+                    {selectedVariant?.sizes?.length > 0 && (
+
+                        <div className="mb-8">
+
+                            <h3 className="text-sm font-semibold mb-4 uppercase tracking-wider">
+                                Sizes
+                            </h3>
+
+                            <div className="flex gap-3 flex-wrap">
+
+                                {selectedVariant.sizes.map(
+                                    (size: any, index: number) => (
+
+                                        <button
+                                            key={`${size.product_size}-${index}`}
+
+                                            onClick={() => setSelectedSize(size)}
+
+                                            className={`w-14 h-14 rounded-full border text-sm font-medium transition-all
+                        ${selectedSize?.product_size === size.product_size
+                                                    ? "bg-[#000000] text-white border-[#000000]"
+                                                    : "border-gray-200 hover:border-[#000000]"
+                                                }`}
+                                        >
+                                            {size.product_size}
+                                        </button>
+                                    )
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+
+                    {/* Size Selection */}
+                    {/* <div className="mb-8">
                         <div className="flex gap-3">
                             {sizes.map((size: any, index: number) => (
                                 <button
@@ -293,7 +517,7 @@ export default function ProductDetailPage() {
                                 </button>
                             ))}
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Dynamic Add to Cart / Quantity Control */}
                     <div className="space-y-4 mb-12">
