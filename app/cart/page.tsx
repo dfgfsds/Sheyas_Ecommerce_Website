@@ -27,6 +27,7 @@ import { handleApiError } from "@/utils/error-utils";
 import { safeErrorLog } from "@/utils/error-handler";
 import { useRouter } from "next/navigation";
 import { useAuthRedirect } from "@/context/useAuthRedirect";
+import { getVendorDeliveryDetailsApi } from "@/api-endpoints/authendication";
 
 export default function CartPage() {
     // Redirect logic handled manually in the render below to show custom UI
@@ -103,6 +104,12 @@ export default function CartPage() {
         }),
         enabled: !!selectedAddressId && !!vendorId && subtotal > 0,
     });
+
+    const getVendorDeliveryDetailsData: any = useQuery({
+    queryKey: ['getVendorDeliveryDetailsData', vendorId],
+    queryFn: () => getVendorDeliveryDetailsApi(`${vendorId}`),
+    enabled: !!vendorId
+  })
 
     const breakdownData = deliveryResponse?.data?.data || deliveryResponse?.data || {};
     const shippingAmount = parseFloat(
@@ -220,6 +227,7 @@ export default function CartPage() {
         }
     };
 
+    const RazorPayKey=getVendorDeliveryDetailsData?.data?.data?.vendor_site_details?.payment_gateway_client_id;
     const handlePlaceOrder = async () => {
         if (cartItems.length === 0) {
             showToast("Your cart is empty.", "error");
@@ -248,7 +256,7 @@ export default function CartPage() {
                 const data = res.data?.data || res.data;
 
                 const options = {
-                    key: data.razorpay_key,
+                    key: RazorPayKey,
                     amount: data.amount,
                     currency: data.currency,
                     name: "SHEYAS",
