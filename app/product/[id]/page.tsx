@@ -39,43 +39,78 @@ export default function ProductDetailPage() {
     const [isUpdatingCart, setIsUpdatingCart] = useState(false);
 
     const [selectedSize, setSelectedSize] = useState<any>("");
-    const [mainImage, setMainImage] = useState("");
+    // const [mainImage, setMainImage] = useState("");
     const [isImageHovered, setIsImageHovered] = useState(false);
     const [zoomBackgroundPosition, setZoomBackgroundPosition] = useState("50% 50%");
     console.log(selectedSize)
 
     const [selectedVariant, setSelectedVariant] = useState<any>(null);
+const [previewImage, setPreviewImage] = useState("");
+const defaultImage =
+    selectedVariant?.product_variant_image_urls?.[0]
 
-    React.useEffect(() => {
-        if (productData) {
+        ? selectedVariant.product_variant_image_urls[0]
 
-            const firstImage =
-                (productData.image_urls && productData.image_urls[0]) ||
-                productData.product_image ||
-                "/placeholder-image.jpg";
+        : (
+            productData?.image_urls?.[0] ||
+            productData?.product_image ||
+            "/placeholder-image.jpg"
+        );
 
-            setMainImage(
-                firstImage.replace(
-                    "http://ip/",
-                    "http://82.29.161.36/"
-                )
-            );
+// const mainImage = previewImage || defaultImage;
+const mainImage =
+    previewImage ||
+    defaultImage;
 
-            // AUTO SELECT FIRST VARIANT
-            if (productData.variants?.length > 0) {
+const formattedMainImage = mainImage.replace(
+    "http://ip/",
+    "http://82.29.161.36/"
+);
 
-                const firstVariant = productData.variants[0];
+    // React.useEffect(() => {
+    //     if (productData) {
 
-                setSelectedVariant(firstVariant);
+    //         const firstImage =
+    //             (productData.image_urls && productData.image_urls[0]) ||
+    //             productData.product_image ||
+    //             "/placeholder-image.jpg";
 
-                // AUTO SELECT FIRST SIZE
-                if (firstVariant?.sizes?.length > 0) {
-                    setSelectedSize(firstVariant.sizes[0]);
-                }
-            }
-        }
-    }, [productData]);
-    console.log(productData);
+    //         setMainImage(
+    //             firstImage.replace(
+    //                 "http://ip/",
+    //                 "http://82.29.161.36/"
+    //             )
+    //         );
+
+    //         // AUTO SELECT FIRST VARIANT
+    //         if (productData.variants?.length > 0) {
+
+    //             const firstVariant = productData.variants[0];
+
+    //             setSelectedVariant(firstVariant);
+
+    //             // AUTO SELECT FIRST SIZE
+    //             if (firstVariant?.sizes?.length > 0) {
+    //                 setSelectedSize(firstVariant.sizes[0]);
+    //             }
+    //         }
+    //     }
+    // }, [productData]);
+
+
+    // const mainImage = selectedVariant?.product_variant_image_urls?.[0]
+    // ? selectedVariant.product_variant_image_urls[0].replace(
+    //     "http://ip/",
+    //     "http://82.29.161.36/"
+    // )
+    // : (
+    //     productData?.image_urls?.[0] ||
+    //     productData?.product_image ||
+    //     "/placeholder-image.jpg"
+    // ).replace(
+    //     "http://ip/",
+    //     "http://82.29.161.36/"
+    // );
 
     const currentVariant =
         productData?.variants?.find(
@@ -102,7 +137,7 @@ export default function ProductDetailPage() {
     React.useEffect(() => {
         if (productData) {
             const firstImage = (productData.image_urls && productData.image_urls[0]) || productData.product_image || "/placeholder-image.jpg";
-            setMainImage(firstImage.replace("http://ip/", "http://82.29.161.36/"));
+            // setMainImage(firstImage.replace("http://ip/", "http://82.29.161.36/"));
 
             if (productData.variants?.length > 0 && productData.variants[0].sizes?.length > 0) {
                 setSelectedSize(productData.variants[0].sizes[0].product_size);
@@ -247,12 +282,35 @@ export default function ProductDetailPage() {
         onSale: productData.discount ? parseFloat(productData.discount) > parseFloat(productData.price) : false,
     };
 
-    const images = productData.image_urls?.map((url: string) => url.replace("http://ip/", "http://82.29.161.36/")) || [mainImage];
-    // const sizes = Array.from(new Set(
-    //     productData.variants?.flatMap((v: any) => v.sizes?.map((s: any) => s.product_size) || [])
-    //         .filter(Boolean) || []
-    // ));
+    // const images = productData.image_urls?.map((url: string) => url.replace("http://ip/", "http://82.29.161.36/")) || [mainImage];
+    // // const sizes = Array.from(new Set(
+    // //     productData.variants?.flatMap((v: any) => v.sizes?.map((s: any) => s.product_size) || [])
+    // //         .filter(Boolean) || []
+    // // ));
 
+    const images =
+    selectedVariant?.product_variant_image_urls?.length > 0
+
+        ? selectedVariant.product_variant_image_urls.map(
+            (url: string) =>
+                url.replace(
+                    "http://ip/",
+                    "http://82.29.161.36/"
+                )
+        )
+
+        : (
+            productData?.image_urls || [
+                productData?.product_image ||
+                "/placeholder-image.jpg"
+            ]
+        ).map((url: string) =>
+            url.replace(
+                "http://ip/",
+                "http://82.29.161.36/"
+            )
+        );
+        
     return (
         <main className="max-w-[1440px] mx-auto px-6 sm:px-12 pt-14 pb-12 text-[#000000]">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:mb-10 overflow-visible">
@@ -277,7 +335,7 @@ export default function ProductDetailPage() {
                             }}
                         >
                             <img
-                                src={mainImage}
+                                src={formattedMainImage}
                                 alt={product.name}
                                 className="w-full h-auto object-cover rounded-[2rem]"
                             />
@@ -302,7 +360,8 @@ export default function ProductDetailPage() {
                         {images.slice(0, 3).map((img: string, i: number) => (
                             <div
                                 key={i}
-                                onClick={() => setMainImage(img)}
+                                // onClick={() => setMainImage(img)}
+                                 onClick={() => setPreviewImage(img)}
                                 className={`relative aspect-square rounded-2xl overflow-hidden cursor-pointer hover:opacity-80 transition-opacity border ${mainImage === img ? "border-[#000000] border-2" : "border-gray-100"}`}
                             >
                                 <Image
@@ -381,6 +440,10 @@ export default function ProductDetailPage() {
                                             onClick={() => {
 
                                                 setSelectedVariant(variant);
+
+                                                setPreviewImage(
+    variant?.product_variant_image_urls?.[0] || ""
+);
 
                                                 // RESET SIZE
                                                 if (variant?.sizes?.length > 0) {
