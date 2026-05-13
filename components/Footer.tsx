@@ -48,8 +48,10 @@ export default function Footer() {
                 </div>
 
                 {/* Center 2 - Contact Info */}
-                <div className="flex flex-col items-start gap-5">
+                <div className="flex flex-col items-start gap-2">
                     <h3 className="text-lg font-semibold text-left tracking-widest uppercase mb-1">Contact Us</h3>
+                    <h3 className="text-sm font-semibold text-left tracking-widest uppercase">Branchs</h3>
+
                     {/* branch one */}
                     <div className="flex flex-col items-start gap-4 text-sm text-[#e7dcd4]/80">
 
@@ -61,6 +63,7 @@ export default function Footer() {
                         >
                             <FaMapMarkerAlt className="text-lg shrink-0 mt-1" />
                             <span className="leading-relaxed">
+                                HAYA FASHION,<br />
                                 Fine Center, 30/2A, East St,<br />
                                 Anna Nagar, Madurai,<br />
                                 Tamil Nadu 625020

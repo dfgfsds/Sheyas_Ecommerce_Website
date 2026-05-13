@@ -45,27 +45,27 @@ export default function ProductDetailPage() {
     console.log(selectedSize)
 
     const [selectedVariant, setSelectedVariant] = useState<any>(null);
-const [previewImage, setPreviewImage] = useState("");
-const defaultImage =
-    selectedVariant?.product_variant_image_urls?.[0]
+    const [previewImage, setPreviewImage] = useState("");
+    const defaultImage =
+        selectedVariant?.product_variant_image_urls?.[0]
 
-        ? selectedVariant.product_variant_image_urls[0]
+            ? selectedVariant.product_variant_image_urls[0]
 
-        : (
-            productData?.image_urls?.[0] ||
-            productData?.product_image ||
-            "/placeholder-image.jpg"
-        );
+            : (
+                productData?.image_urls?.[0] ||
+                productData?.product_image ||
+                "/placeholder-image.jpg"
+            );
 
-// const mainImage = previewImage || defaultImage;
-const mainImage =
-    previewImage ||
-    defaultImage;
+    // const mainImage = previewImage || defaultImage;
+    const mainImage =
+        previewImage ||
+        defaultImage;
 
-const formattedMainImage = mainImage.replace(
-    "http://ip/",
-    "http://82.29.161.36/"
-);
+    const formattedMainImage = mainImage.replace(
+        "http://ip/",
+        "http://82.29.161.36/"
+    );
 
     // React.useEffect(() => {
     //     if (productData) {
@@ -289,28 +289,28 @@ const formattedMainImage = mainImage.replace(
     // // ));
 
     const images =
-    selectedVariant?.product_variant_image_urls?.length > 0
+        selectedVariant?.product_variant_image_urls?.length > 0
 
-        ? selectedVariant.product_variant_image_urls.map(
-            (url: string) =>
+            ? selectedVariant.product_variant_image_urls.map(
+                (url: string) =>
+                    url.replace(
+                        "http://ip/",
+                        "http://82.29.161.36/"
+                    )
+            )
+
+            : (
+                productData?.image_urls || [
+                    productData?.product_image ||
+                    "/placeholder-image.jpg"
+                ]
+            ).map((url: string) =>
                 url.replace(
                     "http://ip/",
                     "http://82.29.161.36/"
                 )
-        )
+            );
 
-        : (
-            productData?.image_urls || [
-                productData?.product_image ||
-                "/placeholder-image.jpg"
-            ]
-        ).map((url: string) =>
-            url.replace(
-                "http://ip/",
-                "http://82.29.161.36/"
-            )
-        );
-        
     return (
         <main className="max-w-[1440px] mx-auto px-6 sm:px-12 pt-14 pb-12 text-[#000000]">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:mb-10 overflow-visible">
@@ -361,7 +361,7 @@ const formattedMainImage = mainImage.replace(
                             <div
                                 key={i}
                                 // onClick={() => setMainImage(img)}
-                                 onClick={() => setPreviewImage(img)}
+                                onClick={() => setPreviewImage(img)}
                                 className={`relative aspect-square rounded-2xl overflow-hidden cursor-pointer hover:opacity-80 transition-opacity border ${mainImage === img ? "border-[#000000] border-2" : "border-gray-100"}`}
                             >
                                 <Image
@@ -442,8 +442,8 @@ const formattedMainImage = mainImage.replace(
                                                 setSelectedVariant(variant);
 
                                                 setPreviewImage(
-    variant?.product_variant_image_urls?.[0] || ""
-);
+                                                    variant?.product_variant_image_urls?.[0] || ""
+                                                );
 
                                                 // RESET SIZE
                                                 if (variant?.sizes?.length > 0) {

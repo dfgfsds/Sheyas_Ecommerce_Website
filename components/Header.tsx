@@ -69,6 +69,7 @@ export default function Header() {
         { name: "Home", path: "/" },
         { name: "Categories", path: "/categories" },
         { name: "Products", path: "/products" },
+        { name: "25% Discounts", path: "/25Dicsounts" },
         { name: "Contact Us", path: "/contact" },
         { name: "About Us", path: "/about" },
         { name: "Order Status", path: "/orders", protected: true },
@@ -189,7 +190,7 @@ export default function Header() {
                         </nav>
 
                         {/* Right Icons */}
-                        <div className="flex-1 flex items-center gap-4 sm:gap-8 text-[#000000] justify-end order-3">
+                        <div className="flex-1 flex items-center gap-4 sm:gap-8 text-[#000000] justify-end order-3 ml-2">
                             <button
                                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                                 aria-label="Search"

@@ -21,7 +21,7 @@ interface ProductProps {
 
 import { useState } from "react";
 
-export default function ProductCard({ product }: ProductProps) {
+export default function ProductCard({ product }: any) {
     const [imgSrc, setImgSrc] = useState(product.image);
 
     return (
@@ -78,6 +78,12 @@ export default function ProductCard({ product }: ProductProps) {
                     <span className="md:text-sm text-xs text-gray-600 line-through ">
                         {product.oldPrice}
                     </span>
+
+                    {product.discount25 && (
+                        <span className="md:text-sm text-xs text-red-500 font-bold">
+                            25% OFF
+                        </span>
+                    )}
                 </div>
 
                 {/* CTA Button */}
