@@ -14,19 +14,59 @@ export default function CategoriesPage() {
 
     const categoriesArray = apiCategories?.data || apiCategories || [];
 
-    const displayCategories = categoriesArray?.length > 0 ? categoriesArray.map((c: any) => {
-        let imageUrl = c.image || "/placeholder-image.jpg";
-        if (imageUrl.includes("http://ip/")) {
-            imageUrl = imageUrl.replace("http://ip/", "http://82.29.161.36/");
-        }
+    // const displayCategories = categoriesArray?.length > 0 ? categoriesArray.map((c: any) => {
+    //     let imageUrl = c.image || "/placeholder-image.jpg";
+    //     if (imageUrl.includes("http://ip/")) {
+    //         imageUrl = imageUrl.replace("http://ip/", "http://82.29.161.36/");
+    //     }
 
-        return {
-            id: c.id,
-            name: c.name || "Unnamed Category",
-            slug: c.slug || c.name?.toLowerCase().replace(/\s+/g, '-'),
-            image: imageUrl,
-        };
-    }) : [];
+    //     return {
+    //         id: c.id,
+    //         name: c.name || "Unnamed Category",
+    //         slug: c.slug || c.name?.toLowerCase().replace(/\s+/g, '-'),
+    //         image: imageUrl,
+    //     };
+    // }) : [];
+
+    const displayCategories =
+        categoriesArray?.length > 0
+            ? categoriesArray
+                .filter((c: any) => c.id !== 838)
+                .map((c: any) => {
+
+                    let imageUrl =
+                        c.image ||
+                        "/placeholder-image.jpg";
+
+                    if (
+                        imageUrl.includes(
+                            "http://ip/"
+                        )
+                    ) {
+                        imageUrl =
+                            imageUrl.replace(
+                                "http://ip/",
+                                "http://82.29.161.36/"
+                            );
+                    }
+
+                    return {
+                        id: c.id,
+                        name:
+                            c.name ||
+                            "Unnamed Category",
+                        slug:
+                            c.slug ||
+                            c.name
+                                ?.toLowerCase()
+                                .replace(
+                                    /\s+/g,
+                                    "-"
+                                ),
+                        image: imageUrl,
+                    };
+                })
+            : [];
 
     const totalPages = Math.ceil(displayCategories.length / categoriesPerPage);
     // const paginatedCategories = displayCategories.slice(
@@ -89,7 +129,7 @@ export default function CategoriesPage() {
                                 variants={{
                                     hidden: { opacity: 0, y: 30 },
                                     visible: { opacity: 1, y: 0 }
-                                 }}
+                                }}
                                 transition={{ duration: 0.5 }}
                             >
                                 <CategoryCard category={category} />
