@@ -16,38 +16,138 @@ export default function Home() {
   const { categories: apiCategories, isLoading: isCategoriesLoading } = useCategories();
 
   const categoriesArray = apiCategories?.data || apiCategories || [];
-  const displayCategories = categoriesArray?.length > 0 ? categoriesArray.map((c: any) => {
-    let imageUrl = c.image || "/placeholder-image.jpg";
-    if (imageUrl.includes("http://ip/")) {
-      imageUrl = imageUrl.replace("http://ip/", "http://82.29.161.36/");
-    }
-    return {
-      id: c.id,
-      name: c.name || "Unnamed Category",
-      slug: c.slug || c.name?.toLowerCase().replace(/\s+/g, '-'),
-      image: imageUrl,
-    };
-  }) : [];
+  // const displayCategories = categoriesArray?.length > 0 ? categoriesArray.map((c: any) => {
+  //   let imageUrl = c.image || "/placeholder-image.jpg";
+  //   if (imageUrl.includes("http://ip/")) {
+  //     imageUrl = imageUrl.replace("http://ip/", "http://82.29.161.36/");
+  //   }
+  //   return {
+  //     id: c.id,
+  //     name: c.name || "Unnamed Category",
+  //     slug: c.slug || c.name?.toLowerCase().replace(/\s+/g, '-'),
+  //     image: imageUrl,
+  //   };
+  // }) : [];
+  const displayCategories =
+    categoriesArray?.length > 0
+      ? categoriesArray
+        .filter((c: any) => c.id !== 838)
+        .map((c: any) => {
+
+          let imageUrl =
+            c.image ||
+            "/placeholder-image.jpg";
+
+          if (
+            imageUrl.includes(
+              "http://ip/"
+            )
+          ) {
+            imageUrl =
+              imageUrl.replace(
+                "http://ip/",
+                "http://82.29.161.36/"
+              );
+          }
+
+          return {
+            id: c.id,
+            name:
+              c.name ||
+              "Unnamed Category",
+            slug:
+              c.slug ||
+              c.name
+                ?.toLowerCase()
+                .replace(/\s+/g, "-"),
+            image: imageUrl,
+          };
+        })
+      : [];
   const featuredCategories = displayCategories.slice(0, 4);
 
-  const displayProducts = apiProducts?.length > 0 ? apiProducts.map((p: any) => {
-    let imageUrl = (p.image_urls && p.image_urls[0]) || p.product_image || "/placeholder-image.jpg";
-    if (imageUrl.includes("http://ip/")) {
-      imageUrl = imageUrl.replace("http://ip/", "http://82.29.161.36/");
-    }
+  // const displayProducts = apiProducts?.length > 0 ? apiProducts.map((p: any) => {
+  //   let imageUrl = (p.image_urls && p.image_urls[0]) || p.product_image || "/placeholder-image.jpg";
+  //   if (imageUrl.includes("http://ip/")) {
+  //     imageUrl = imageUrl.replace("http://ip/", "http://82.29.161.36/");
+  //   }
 
-    return {
-      id: p.id,
-      name: p.name || p.product_name || "Unnamed Product",
-      oldPrice: `₹${p.discount || p.price}`,
-      newPrice: `₹${p.price}`,
-      rating: p.ratings || 0,
-      reviews: 0,
-      image: imageUrl,
-      onSale: p.discount ? parseFloat(p.discount) > parseFloat(p.price) : false,
-      categoryName: p.category_name || "Collection",
-    };
-  }) : [] as Product[];
+  //   return {
+  //     id: p.id,
+  //     name: p.name || p.product_name || "Unnamed Product",
+  //     oldPrice: `₹${p.discount || p.price}`,
+  //     newPrice: `₹${p.price}`,
+  //     rating: p.ratings || 0,
+  //     reviews: 0,
+  //     image: imageUrl,
+  //     onSale: p.discount ? parseFloat(p.discount) > parseFloat(p.price) : false,
+  //     categoryName: p.category_name || "Collection",
+  //   };
+  // }) : [] as Product[];
+
+  const displayProducts =
+    apiProducts?.length > 0
+      ? apiProducts
+        .filter(
+          (p: any) =>
+            p?.category !== 838
+        )
+        .map((p: any) => {
+
+          let imageUrl =
+            (p.image_urls &&
+              p.image_urls[0]) ||
+            p.product_image ||
+            "/placeholder-image.jpg";
+
+          if (
+            imageUrl.includes(
+              "http://ip/"
+            )
+          ) {
+            imageUrl =
+              imageUrl.replace(
+                "http://ip/",
+                "http://82.29.161.36/"
+              );
+          }
+
+          return {
+            id: p.id,
+
+            name:
+              p.name ||
+              p.product_name ||
+              "Unnamed Product",
+
+            oldPrice: `₹${p.discount ||
+              p.price
+              }`,
+
+            newPrice: `₹${p.price}`,
+
+            rating:
+              p.ratings || 0,
+
+            reviews: 0,
+
+            image: imageUrl,
+
+            onSale: p.discount
+              ? parseFloat(
+                p.discount
+              ) >
+              parseFloat(
+                p.price
+              )
+              : false,
+
+            categoryName:
+              p.category_name ||
+              "Collection",
+          };
+        })
+      : ([] as Product[]);
 
   const featuredProducts = displayProducts.slice(0, 4);
 

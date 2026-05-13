@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 
 import { useState, useRef, useEffect } from "react";
 
-export default function ProductsPage() {
+export default function Page25Discounts() {
     const { products: apiProducts, isLoading } = useProducts();
     const [currentPage, setCurrentPage] = useState(1);
     const [sortOption, setSortOption] = useState("DEFAULT SORTING");
@@ -114,6 +114,7 @@ export default function ProductsPage() {
 
                         categoryName:
                             p.category_name || "",
+                            discount25:true,
                     };
                 })
             : ([] as Product[]);
@@ -170,7 +171,7 @@ export default function ProductsPage() {
                     priority
                 />
                 <div className="absolute inset-0 bg-black/10 flex flex-col items-center justify-center text-center px-4">
-                    <h1 className="text-4xl sm:text-6xl font-serif italic text-white drop-shadow-2xl mb-4 tracking-wide">Our Collections</h1>
+                    <h1 className="text-4xl sm:text-6xl font-serif italic text-white drop-shadow-2xl mb-4 tracking-wide">25% Discounts</h1>
                     <div className="w-24 h-[1px] bg-white/60"></div>
                 </div>
             </div>
@@ -180,7 +181,7 @@ export default function ProductsPage() {
                 {/* Header & Filters */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 md:gap-8 mb-10 md:mb-16 pb-6 md:pb-8 border-b border-gray-100">
                     <div className="space-y-1">
-                        <h2 className="text-2xl md:text-3xl font-bold italic">All Products</h2>
+                        <h2 className="text-2xl md:text-3xl font-bold italic"> Products</h2>
                         <p className="text-[15px] md:text-[16px]">{displayProducts.length} products available</p>
                     </div>
 
