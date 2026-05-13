@@ -60,7 +60,7 @@ export default function Page25Discounts() {
             ? apiProducts
                 .filter(
                     (p: any) =>
-                        p?.categoryId !== 838
+                        p?.categoryId === 838
                 )
                 .map((p: any) => {
 
