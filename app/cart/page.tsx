@@ -106,10 +106,10 @@ export default function CartPage() {
     });
 
     const getVendorDeliveryDetailsData: any = useQuery({
-    queryKey: ['getVendorDeliveryDetailsData', vendorId],
-    queryFn: () => getVendorDeliveryDetailsApi(`${vendorId}`),
-    enabled: !!vendorId
-  })
+        queryKey: ['getVendorDeliveryDetailsData', vendorId],
+        queryFn: () => getVendorDeliveryDetailsApi(`${vendorId}`),
+        enabled: !!vendorId
+    })
 
     const breakdownData = deliveryResponse?.data?.data || deliveryResponse?.data || {};
     const shippingAmount = parseFloat(
@@ -227,7 +227,7 @@ export default function CartPage() {
         }
     };
 
-    const RazorPayKey=getVendorDeliveryDetailsData?.data?.data?.vendor_site_details?.payment_gateway_client_id;
+    const RazorPayKey = getVendorDeliveryDetailsData?.data?.data?.vendor_site_details?.payment_gateway_client_id;
     const handlePlaceOrder = async () => {
         if (cartItems.length === 0) {
             showToast("Your cart is empty.", "error");
@@ -244,24 +244,24 @@ export default function CartPage() {
                 user_id: userId,
                 vendor_id: vendorId,
                 customer_phone: user?.data?.contact_number || user?.contact_number || "",
-                cart_id: cartId,
-                user_address_id: selectedAddressId,
-                payment_mode: paymentMethod,
-                total_amount: subtotal + shippingAmount - totalDiscount,
-                updated_by: user?.data?.name || user?.name || "User"
+                // cart_id: cartId,
+                // user_address_id: selectedAddressId,
+                // payment_mode: paymentMethod,
+                // total_amount: subtotal + shippingAmount - totalDiscount,
+                // updated_by: user?.data?.name || user?.name || "User"
             };
 
             if (paymentMethod === "Prepaid") {
                 const res = await postPaymentApi("", payload);
-                const data = res.data?.data || res.data;
+                const data = res.data;
 
                 const options = {
                     key: RazorPayKey,
-                    amount: data.amount,
-                    currency: data.currency,
+                    amount: data.final_price * 100,
+                    currency: "INR",
                     name: "SHEYAS",
                     description: "Order Payment",
-                    order_id: data.razorpay_order_id,
+                    order_id: data.payment_order_id,
                     handler: async function (response: any) {
                         const finalOrderId =
                             data.order_response?.order?.id ||
@@ -537,27 +537,26 @@ export default function CartPage() {
                             </div>
                         </div> */}
                         {/* Payment Method Selection */}
-<div className="bg-gray-50 p-6 sm:p-8 rounded-[2rem] border border-gray-100 space-y-4">
-    <h2 className="text-xl font-serif italic">Payment Method</h2>
+                        <div className="bg-gray-50 p-6 sm:p-8 rounded-[2rem] border border-gray-100 space-y-4">
+                            <h2 className="text-xl font-serif italic">Payment Method</h2>
 
-    <div className="flex flex-col gap-4">
-        {["Prepaid", "COD"].map((method) => (
-            <button
-                key={method}
-                onClick={() => setPaymentMethod(method as any)}
-                className={`w-full py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${
-                    paymentMethod === method
-                        ? "bg-black text-white shadow-lg scale-[1.02]"
-                        : "bg-white text-black border border-gray-200 hover:border-black opacity-60"
-                }`}
-            >
-                {method === "Prepaid"
-                    ? "Pay Online"
-                    : "Cash on Delivery"}
-            </button>
-        ))}
-    </div>
-</div>
+                            <div className="flex flex-col gap-4">
+                                {["Prepaid", "COD"].map((method) => (
+                                    <button
+                                        key={method}
+                                        onClick={() => setPaymentMethod(method as any)}
+                                        className={`w-full py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${paymentMethod === method
+                                                ? "bg-black text-white shadow-lg scale-[1.02]"
+                                                : "bg-white text-black border border-gray-200 hover:border-black opacity-60"
+                                            }`}
+                                    >
+                                        {method === "Prepaid"
+                                            ? "Pay Online"
+                                            : "Cash on Delivery"}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
 
                         <div className="bg-[#000000] text-white p-8 rounded-[2rem] shadow-2xl space-y-6">
                             <h2 className="text-2xl font-serif italic mb-4">Summary</h2>
@@ -642,7 +641,7 @@ export default function CartPage() {
 
                         <div className="space-y-3">
                             <button
-                                onClick={() => router.push(`/orders/${orderId}`)}
+                                onClick={() => router.push(`/orders`)}
                                 className="w-full bg-black text-white py-4 rounded-full font-bold uppercase tracking-widest hover:bg-gray-900 transition-all"
                             >
                                 Track Your Order
