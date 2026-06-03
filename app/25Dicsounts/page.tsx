@@ -114,7 +114,12 @@ export default function Page25Discounts() {
 
                         categoryName:
                             p.category_name || "",
-                            discount25:true,
+                        discount25: true,
+                        
+                        slug_name: p?.slug_name
+                            ?.toLowerCase()
+                            ?.replace(/[\s\-_]+/g, "")
+                            ?.replace(/[^a-z0-9]/g, "")
                     };
                 })
             : ([] as Product[]);

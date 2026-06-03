@@ -385,9 +385,9 @@ export default function CartPage() {
                                         <div className="space-y-1">
                                             <h3 className="text-base sm:text-lg font-medium leading-tight">{item.display_name}</h3>
                                             <p className="text-xs sm:text-sm opacity-60 italic">{item.display_price}</p>
-                                            {item.display_size && item.display_size !== 'N/A' && (
+                                            {/* {item.display_size && item.display_size !== 'N/A' && (
                                                 <p className="text-xs sm:text-sm font-semibold">Size: {item.display_size}</p>
-                                            )}
+                                            )} */}
                                         </div>
                                     </div>
 

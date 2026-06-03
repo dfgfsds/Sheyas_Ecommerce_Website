@@ -26,7 +26,7 @@ export default function ProductCard({ product }: any) {
 
     return (
         <div className="group cursor-pointer">
-            <Link href={`/product/${product.id}`}>
+            <Link href={`/product/${product.slug_name}`}>
                 {/* Image Container */}
                 <div className="relative aspect-[4/5] rounded-2xl overflow-hidden mb-4 shadow-sm bg-gray-50">
                     <Image
@@ -87,7 +87,7 @@ export default function ProductCard({ product }: any) {
                 </div>
 
                 {/* CTA Button */}
-                <Link href={`/product/${product.id}`} className="block mt-3">
+                <Link href={`/product/${product?.slug_name}`} className="block mt-3">
                     <button className="w-full border border-[#000000] md:py-3 py-1.5 rounded-full text-sm md:text-base font-bold text-[#000000] hover:bg-[#000000] hover:text-white transition-all duration-300">
                         Choose options
                     </button>

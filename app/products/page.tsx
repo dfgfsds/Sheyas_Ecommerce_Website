@@ -114,6 +114,10 @@ export default function ProductsPage() {
 
                         categoryName:
                             p.category_name || "",
+                        slug_name: p?.slug_name
+                            ?.toLowerCase()
+                            ?.replace(/[\s\-_]+/g, "")
+                            ?.replace(/[^a-z0-9]/g, "")
                     };
                 })
             : ([] as Product[]);
