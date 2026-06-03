@@ -85,6 +85,8 @@ export default function Home() {
   //   };
   // }) : [] as Product[];
 
+
+
   const displayProducts =
     apiProducts?.length > 0
       ? apiProducts
@@ -145,6 +147,12 @@ export default function Home() {
             categoryName:
               p.category_name ||
               "Collection",
+            // slug_name: p.slug_name?.toLowerCase().replace(/\s+/g, '-'),
+
+            slug_name: p?.slug_name
+              ?.toLowerCase()
+              ?.replace(/[\s\-_]+/g, "")
+              ?.replace(/[^a-z0-9]/g, "")
           };
         })
       : ([] as Product[]);
