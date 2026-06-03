@@ -50,6 +50,10 @@ export default function CategoryDetailPage() {
             image: imageUrl,
             onSale: p.discount ? parseFloat(p.discount) > parseFloat(p.price) : false,
             categoryName: p.category_name || categoryName,
+            slug_name: p?.slug_name
+                ?.toLowerCase()
+                ?.replace(/[\s\-_]+/g, "")
+                ?.replace(/[^a-z0-9]/g, "")
         };
     }) : [] as Product[];
 
@@ -71,7 +75,7 @@ export default function CategoryDetailPage() {
 
     return (
         <main className="max-w-[1440px] mx-auto px-6 sm:px-12 py-10 ">
-            
+
             <div className="mb-12">
                 <h1 className="text-4xl sm:text-5xl font-serif italic text-center text-[#000000] capitalize">
                     {categoryName}
@@ -110,7 +114,7 @@ export default function CategoryDetailPage() {
                                 variants={{
                                     hidden: { opacity: 0, y: 30 },
                                     visible: { opacity: 1, y: 0 }
-                                 }}
+                                }}
                                 transition={{ duration: 0.5 }}
                             >
                                 <ProductCard product={product} />
