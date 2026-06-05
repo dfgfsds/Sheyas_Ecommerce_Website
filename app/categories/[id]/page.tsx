@@ -53,7 +53,8 @@ export default function CategoryDetailPage() {
             slug_name: p?.slug_name
                 ?.toLowerCase()
                 ?.replace(/[\s\-_]+/g, "")
-                ?.replace(/[^a-z0-9]/g, "")
+                ?.replace(/[^a-z0-9]/g, ""),
+            status: p.status
         };
     }) : [] as Product[];
 
