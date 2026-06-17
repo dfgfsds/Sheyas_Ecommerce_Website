@@ -155,3 +155,8 @@ export const getDeliveryChargeApi = async (query: any, payload: any) => {
 export const getCartItemsProductSizesWithVariantsApi = async (query: any) => {
     return axios.get(`${ApiUrls.cartItemProductSizeVariants}${query}`);
 };
+
+  // GET ALL COUPONS API
+export const getAllCouponsApi = async (query: any) => {
+    return axios.get(`${ApiUrls.coupons}${query}`);
+}
