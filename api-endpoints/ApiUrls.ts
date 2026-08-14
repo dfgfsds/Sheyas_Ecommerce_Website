@@ -1,5 +1,5 @@
 export const baseUrl = 'https://ecomapi.ftdigitalsolutions.org';
-// export const baseUrl = 'https://test-ecomapi.justvy.in';
+// export const baseUrl = 'https://test-ecomapi.ftdigitalsolutions.org';
 // export const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://ecomapi.ftdigitalsolutions.org';
 // export const baseUrlTest = process.env.NEXT_PUBLIC_API_BASE_URL_TEST || 'https://test-ecomapi.justvy.in';
 
@@ -42,6 +42,8 @@ const sendSmsOtpUser = `${baseUrl}/send-sms-opt-user/`;
 const otpVerify = `${baseUrl}/verify-sms-opt-return-user/`;
 const cartItemProductSizeVariants = `${baseUrl}/cart_with_cart_items_product_or_variant_refined/`;
 const sendQuoteRequest = `${baseUrl}/send_quote_request_api/`;
+const loginWithGoogle = `${baseUrl}/login-with-google/`;
+const deviceLogout = `${baseUrl}/device/logout/`;
 
 export default {
   cartCreate,
@@ -82,5 +84,7 @@ export default {
   sendSmsOtpUser,
   otpVerify,
   cartItemProductSizeVariants,
-  sendQuoteRequest
+  sendQuoteRequest,
+  loginWithGoogle,
+  deviceLogout
 };

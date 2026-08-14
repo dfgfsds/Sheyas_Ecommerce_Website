@@ -11,6 +11,9 @@ import { useVendor } from "@/context/VendorContext";
 import { useToast } from "@/context/ToastContext";
 import { safeErrorLog } from "@/utils/error-handler";
 import { handleApiError } from "@/utils/error-utils";
+import { postLoginWithGoogleApi } from "@/api-endpoints/authendication";
+import { auth, googleProvider, signInWithPopup } from "@/utils/firebase";
+import { FcGoogle } from "react-icons/fc";
 
 export default function LoginPage() {
     return (
@@ -205,6 +208,47 @@ function LoginContent() {
         }
     };
 
+    const handleGoogleLogin = async () => {
+        setIsLoading(true);
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            const idToken = await result.user.getIdToken();
+            
+            const payload = {
+                id_token: idToken,
+                vendor_id: vendorId
+            };
+            
+            const res = await postLoginWithGoogleApi(payload);
+            const userId = res?.data?.user_id || res?.data?.user?.id || res?.data?.id;
+
+            if (userId) {
+                localStorage.setItem("userId", userId);
+
+                // Sync Cart
+                const cartRes = await getCartApi(`user/${userId}`);
+                if (cartRes?.data?.length > 0) {
+                    localStorage.setItem("cartId", cartRes.data[0].id);
+                }
+
+                showToast("Login successful!", "success");
+                setTimeout(() => {
+                    window.location.href = redirectPath;
+                }, 500);
+            } else {
+                showToast("Login successful but missing user data.", "warning");
+                setTimeout(() => {
+                    window.location.href = redirectPath;
+                }, 500);
+            }
+        } catch (error: any) {
+            safeErrorLog("Google Login failed", error);
+            showToast(handleApiError(error), "error");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <main className="min-h-[85vh] flex items-center justify-center px-4 sm:px-6 py-10 sm:py-16 text-gray-800 bg-[#f9f8f4]">
             <div className="w-full max-w-[420px] bg-white p-6 sm:p-10 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-gray-50">
@@ -368,6 +412,25 @@ function LoginContent() {
                     </button>
 
                 </form>
+
+                {/* Google Sign In */}
+                <div className="mt-6 flex items-center gap-4">
+                    <div className="flex-1 h-px bg-gray-200"></div>
+                    <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Or</span>
+                    <div className="flex-1 h-px bg-gray-200"></div>
+                </div>
+
+                <div className="mt-6">
+                    <button
+                        type="button"
+                        onClick={handleGoogleLogin}
+                        disabled={isLoading}
+                        className="w-full bg-white border border-gray-200 text-gray-800 py-3 sm:py-3.5 rounded-full text-sm sm:text-base font-bold transition-all shadow-sm flex items-center justify-center gap-3 hover:bg-gray-50 disabled:opacity-70 disabled:cursor-not-allowed"
+                    >
+                        <FcGoogle className="w-5 h-5 sm:w-6 sm:h-6" />
+                        Continue with Google
+                    </button>
+                </div>
 
                 {/* Footer */}
                 <div className="mt-5 border-t border-gray-50 text-center">
