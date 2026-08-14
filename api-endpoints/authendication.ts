@@ -77,3 +77,13 @@ export const postSendSmsOtpUserApi = async (payload:any) => {
 export const postVerifySmsOtpApi = async (payload:any) => {
   return axios.post(ApiUrls.otpVerify,payload);
 } 
+
+// GOOGLE SSO API
+export const postLoginWithGoogleApi = async (payload:any) => {
+  return axios.post(ApiUrls.loginWithGoogle,payload);
+}
+
+// DEVICE LOGOUT API
+export const postDeviceLogoutApi = async (payload:any) => {
+  return axios.post(ApiUrls.deviceLogout,payload);
+}
