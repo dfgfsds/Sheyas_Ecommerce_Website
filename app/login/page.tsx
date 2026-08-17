@@ -35,6 +35,8 @@ function LoginContent() {
     const [token, setToken] = useState<string | null>(null);
     const [timer, setTimer] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
+    const [googleLoading, setGoogleLoading] = useState(false);
+    const [error, setError] = useState("");
     const otpInputRef = useRef<HTMLInputElement>(null);
 
     const router = useRouter();
@@ -209,43 +211,72 @@ function LoginContent() {
     };
 
     const handleGoogleLogin = async () => {
-        setIsLoading(true);
+        setGoogleLoading(true);
+        setError('');
+
+        let isPopupResolved = false;
+
+        // Workaround for Firebase delay: reset loading when window regains focus
+        const handleFocus = () => {
+            window.removeEventListener('focus', handleFocus);
+            setTimeout(() => {
+                if (!isPopupResolved) {
+                    setGoogleLoading(false);
+                }
+            }, 1500);
+        };
+        window.addEventListener('focus', handleFocus);
+
         try {
             const result = await signInWithPopup(auth, googleProvider);
+            isPopupResolved = true;
+            window.removeEventListener('focus', handleFocus);
             const idToken = await result.user.getIdToken();
-            
-            const payload = {
+
+            const response: any = await postLoginWithGoogleApi({
                 id_token: idToken,
-                vendor_id: vendorId
-            };
-            
-            const res = await postLoginWithGoogleApi(payload);
-            const userId = res?.data?.user_id || res?.data?.user?.id || res?.data?.id;
+                vendor_id: vendorId,
+            });
 
-            if (userId) {
-                localStorage.setItem("userId", userId);
+            if (response) {
+                const uid = response?.data?.user_id || response?.data?.user?.id || response?.data?.id;
+                if (uid) {
+                    localStorage.setItem('userId', String(uid));
+                }
+                if (response?.data?.name || response?.data?.user?.name) {
+                    localStorage.setItem('userName', response?.data?.name || response?.data?.user?.name);
+                }
+                if (response?.data?.email || response?.data?.user?.email) {
+                    localStorage.setItem('email', response?.data?.email || response?.data?.user?.email);
+                }
 
-                // Sync Cart
-                const cartRes = await getCartApi(`user/${userId}`);
-                if (cartRes?.data?.length > 0) {
-                    localStorage.setItem("cartId", cartRes.data[0].id);
+                if (uid) {
+                    try {
+                        const updateApi = await getCartApi(`user/${uid}`);
+                        if (updateApi?.data?.[0]?.id) {
+                            localStorage.setItem('cartId', updateApi.data[0].id);
+                        }
+                    } catch (cartErr) {
+                        console.error("Error syncing cart on google login:", cartErr);
+                    }
                 }
 
                 showToast("Login successful!", "success");
                 setTimeout(() => {
                     window.location.href = redirectPath;
                 }, 500);
-            } else {
-                showToast("Login successful but missing user data.", "warning");
-                setTimeout(() => {
-                    window.location.href = redirectPath;
-                }, 500);
             }
-        } catch (error: any) {
-            safeErrorLog("Google Login failed", error);
-            showToast(handleApiError(error), "error");
+        } catch (err: any) {
+            console.error("Google login error:", err);
+            if (err?.code === 'auth/popup-closed-by-user' || err?.code === 'auth/cancelled-popup-request') {
+                // Silently handle popup close without showing error to the user
+                setError('');
+            } else {
+                setError(err?.response?.data?.error || err?.response?.data?.message || err?.message || 'Failed to sign in with Google');
+                showToast(err?.response?.data?.error || err?.response?.data?.message || err?.message || 'Failed to sign in with Google', "error");
+            }
         } finally {
-            setIsLoading(false);
+            setGoogleLoading(false);
         }
     };
 
@@ -257,6 +288,34 @@ function LoginContent() {
                 <div className="text-center mb-8 sm:mb-10">
                     <h1 className="text-3xl sm:text-4xl font-serif text-[#000000] mb-2 tracking-wide">Welcome Back</h1>
                     <p className="text-sm sm:text-base text-[#000000] ">Login to your Sheyas account</p>
+                </div>
+
+                {/* Google Sign In (Moved to top) */}
+                <div className="mb-6">
+                    <button
+                        type="button"
+                        onClick={handleGoogleLogin}
+                        disabled={googleLoading || isLoading}
+                        className="relative w-full overflow-hidden bg-white border border-gray-200 text-gray-800 py-3.5 sm:py-4 rounded-2xl text-sm sm:text-base font-bold transition-all shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] flex items-center justify-center gap-3 hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none group"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-50/0 via-gray-50/50 to-gray-50/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+
+                        {googleLoading ? (
+                            <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-gray-300 border-t-[#000000] rounded-full animate-spin"></div>
+                        ) : (
+                            <FcGoogle className="w-5 h-5 sm:w-6 sm:h-6 z-10" />
+                        )}
+                        <span className="z-10">{googleLoading ? "Signing in..." : "Continue with Google"}</span>
+                    </button>
+                    {error && (
+                        <p className="text-red-500 text-xs mt-2 text-center">{error}</p>
+                    )}
+                </div>
+
+                <div className="mb-6 flex items-center gap-4">
+                    <div className="flex-1 h-px bg-gray-200"></div>
+                    <span className="text-[10px] sm:text-xs text-gray-400 font-bold uppercase tracking-wider">Or continue with</span>
+                    <div className="flex-1 h-px bg-gray-200"></div>
                 </div>
 
                 {/* Login Method Toggle */}
@@ -413,24 +472,7 @@ function LoginContent() {
 
                 </form>
 
-                {/* Google Sign In */}
-                <div className="mt-6 flex items-center gap-4">
-                    <div className="flex-1 h-px bg-gray-200"></div>
-                    <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Or</span>
-                    <div className="flex-1 h-px bg-gray-200"></div>
-                </div>
 
-                <div className="mt-6">
-                    <button
-                        type="button"
-                        onClick={handleGoogleLogin}
-                        disabled={isLoading}
-                        className="w-full bg-white border border-gray-200 text-gray-800 py-3 sm:py-3.5 rounded-full text-sm sm:text-base font-bold transition-all shadow-sm flex items-center justify-center gap-3 hover:bg-gray-50 disabled:opacity-70 disabled:cursor-not-allowed"
-                    >
-                        <FcGoogle className="w-5 h-5 sm:w-6 sm:h-6" />
-                        Continue with Google
-                    </button>
-                </div>
 
                 {/* Footer */}
                 <div className="mt-5 border-t border-gray-50 text-center">
