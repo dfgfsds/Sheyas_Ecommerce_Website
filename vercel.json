@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/__/auth/:path*",
+      "destination": "https://neural-ripple-504906-f6.firebaseapp.com/__/auth/:path*"
+    }
+  ]
+}
