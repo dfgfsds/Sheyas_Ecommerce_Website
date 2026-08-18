@@ -3,7 +3,7 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/
 
 const firebaseConfig = {
   apiKey: "AIzaSyDGB9tsMWcng-2LY0rCqAIcQ4Jp_nIeLyE",
-  authDomain: "neural-ripple-504906-f6.firebaseapp.com",
+  authDomain: "auth.sheyas.in",
   projectId: "neural-ripple-504906-f6",
   storageBucket: "neural-ripple-504906-f6.firebasestorage.app",
   messagingSenderId: "537746754440",
